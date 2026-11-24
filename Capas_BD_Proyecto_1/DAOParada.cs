@@ -88,7 +88,7 @@ namespace DAO
                     {
                         int trayecto_id = Convert.ToInt32(reader[ordTrayecto]);
                         int idEstacion = Convert.ToInt32(reader[ordEstacio]);
-                        int orden = Convert.ToInt32(reader[ordOrdre]);zxzxxzx
+                        int orden = Convert.ToInt32(reader[ordOrdre]);
                         string nom = reader.GetString(ordNom);
 
                         DateTime? llegada = reader.IsDBNull(ordArribada) ? (DateTime?)null : reader.GetDateTime(ordArribada);
