@@ -25,6 +25,7 @@ namespace Proyecto_1
             InitializeComponent();
             _context = new MyDBContext();
             CargarDataGrids();
+            LlenarCboMedios();
         }
 
         private void CargarDataGrids()
@@ -74,6 +75,14 @@ namespace Proyecto_1
                 txtDestino.Text = selectedTrayecto.Destino.ToString();
 
             }
+        }
+
+        private void LlenarCboMedios()
+        {
+            cboMedioTransporte.Items.Add("Bus");
+            cboMedioTransporte.Items.Add("Tren");
+            cboMedioTransporte.Items.Add("Avión");
+            cboMedioTransporte.Items.Add("Barco");
         }
     }
 }
