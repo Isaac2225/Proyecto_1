@@ -7,25 +7,118 @@
         mc:Ignorable="d"
         Title="VentanaEditorEscojer" Height="450" Width="800">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="2*"/>
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="0">
-            <TextBlock Text="Editar trayectos o paradas" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </StackPanel>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+            <Border Grid.Row="0" BorderBrush="Black" BorderThickness="2" Margin="10">
+                <StackPanel>
+                    <TextBlock Text="Paradas"/>
+                    <DataGrid x:Name="dtgParadas" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="180"/>
+                </StackPanel>
+            </Border>
 
-            <Button Content="Parada" Grid.Column="0" Click="Button_Click"/>
-            <Button Content="Trayecto" Grid.Column="1" Click="Button_Click_1"/>
+            <Grid Height="40" Margin="0,172,0,0" Grid.RowSpan="2" VerticalAlignment="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="1" Content="Eliminar" Height="30" Width="100" Margin="17,10,17,0" VerticalAlignment="Top"/>
+            </Grid>
+
+            <Border Grid.Row="2" BorderBrush="Black" BorderThickness="2" Margin="10">
+                <StackPanel>
+                    <TextBlock Text="Trayectos"/>
+                    <DataGrid x:Name="dtgTrayectos" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="180"/>
+                </StackPanel>
+            </Border>
+
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="1" Content="Eliminar" Height="30" Width="100" Margin="10" Click="Button_Click_Eliminar"/>
+            </Grid>
         </Grid>
 
-        
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border BorderBrush="Black" BorderThickness="2" Margin="10" Grid.Row="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Hora llegada" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+                            <TextBox HorizontalAlignment="Center" VerticalAlignment="Center" Width="100"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Hora salida" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+                            <TextBox HorizontalAlignment="Center" VerticalAlignment="Center" Width="100"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <Button Content="Guardar" Grid.Column="1" Margin="10"/>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <Border BorderBrush="Black" BorderThickness="2" Margin="10" Grid.Row="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="Nombre:" FontSize="15"/>
+                        <TextBlock Text="Origen:" FontSize="15"/>
+                        <TextBlock Text="Destino:" FontSize="15"/>
+                        <TextBlock Text="Medio Transporte:" FontSize="15"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBox x:Name="txtNombre" FontSize="15" Width="100"/>
+                        <TextBox x:Name="txtOrigen" FontSize="15" Width="100"/>
+                        <TextBox x:Name="txtDestino" FontSize="15" Width="100"/>
+                        <ComboBox x:Name="cboMedioTransporte" FontSize="15" Width="100"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </Window>

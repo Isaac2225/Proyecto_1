@@ -1,4 +1,5 @@
 ﻿using DAO;
+using Modelo;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,18 +23,46 @@ namespace Proyecto_1
         public VentanaEditorEscojer()
         {
             InitializeComponent();
+            _context = new MyDBContext();
+            CargarDataGrids();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void CargarDataGrids()
         {
-            VentanaEditorParada ventanaParada = new VentanaEditorParada();
-            ventanaParada.Show();
-            this.Close();
+            DAOTrayecto trayectoDAO = new DAOTrayecto(_context);
+            dtgTrayectos.ItemsSource = trayectoDAO.GetTrayectos();
+            DAOParada paradaDAO = new DAOParada(_context);
+            dtgParadas.ItemsSource = paradaDAO.GetParadas();
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Button_Click_Eliminar(object sender, RoutedEventArgs e)
         {
+            if (dtgTrayectos.SelectedItem is Trayecto selectedTrayecto)
+            {
+                using (var transaccio = _context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        DAOTrayecto trayectoDAO = new DAOTrayecto(_context);
+                        bool eliminado = trayectoDAO.DeleteTrayecto(selectedTrayecto.Id);
 
+                        if (eliminado)
+                        {
+                            transaccio.Commit();
+                            CargarDataGrids();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        transaccio.Rollback();
+                        MessageBox.Show("Error al eliminar: " + ex.Message);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Seleccione un trayecto para eliminar.");
+            }
         }
     }
 }

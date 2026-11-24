@@ -164,6 +164,115 @@ namespace DAO
             return resultat;
         }
 
+        public ObservableCollection<Trayecto> GetTrayectosValidados(
+            string origen = "",
+            string destino = "",
+            int offset = 0,
+            int rows_per_page = -1,
+            TimeSpan? horaSalida = null,
+            TimeSpan? horaLlegada = null)
+        {
+            ObservableCollection<Trayecto> resultat = new ObservableCollection<Trayecto>();
+
+            if (horaSalida.HasValue && horaLlegada.HasValue && horaLlegada.Value <= horaSalida.Value)
+            {
+                return resultat;
+            }
+
+            var connexio = _context.Database.GetDbConnection();
+            if (connexio.State == System.Data.ConnectionState.Closed)
+            {
+                connexio.Open();
+            }
+
+            using (var consulta = connexio.CreateCommand())
+            {
+                if (consulta is OracleCommand oc)
+                {
+                    oc.BindByName = true;
+                }
+
+                // JOINs y filtros de hora: solo se añaden si el usuario los ha indicado
+                string joinsHores = "";
+                string filtresHores = "";
+
+                if (horaSalida.HasValue)
+                {
+                    joinsHores += @"
+                    JOIN parada po ON po.trajecte_id = t.id
+                                  AND po.estacio_id = t.estacio_origen_id";
+                    filtresHores += @"
+                    AND TO_CHAR(po.hora_sortida, 'HH24:MI') >= :HORA_SORTIDA";
+                }
+
+                if (horaLlegada.HasValue)
+                {
+                    joinsHores += @"
+                    JOIN parada pd ON pd.trajecte_id = t.id
+                                  AND pd.estacio_id = t.estacio_desti_id";
+                    filtresHores += @"
+                    AND TO_CHAR(pd.hora_arribada, 'HH24:MI') <= :HORA_ARRIBADA";
+                }
+
+                if (horaSalida.HasValue && horaLlegada.HasValue)
+                {
+                    filtresHores += @"
+                    AND pd.hora_arribada > po.hora_sortida";
+                }
+
+                consulta.CommandText = $@"
+                    SELECT
+                    t.*,
+                    eo.nom_es       AS nom_origen,
+                    ed.nom_es       AS nom_desti,
+                    u.email         AS u_email,
+                    u.nom           AS u_nom,
+                    u.password      AS u_password,
+                    u.tipus         AS u_tipus,
+                    u.data_registre AS u_dataregistre,
+                    m.nom           AS m_nom
+                    FROM trajecte t
+                    JOIN estacio eo ON eo.id_es = t.estacio_origen_id
+                    JOIN estacio ed ON ed.id_es = t.estacio_desti_id
+                    LEFT JOIN usuari u ON u.id = t.usuari_id
+                    LEFT JOIN mitja_transport m ON m.id = t.mitja_id
+                    {joinsHores}
+                    WHERE UPPER(eo.nom_es) LIKE UPPER(:ORIGEN)
+                    AND UPPER(ed.nom_es) LIKE UPPER(:DESTI) and validat = 1
+                    {filtresHores}
+                    ORDER BY t.id";
+
+                if (rows_per_page > 0)
+                {
+                    consulta.CommandText += $" offset {offset} rows fetch next {rows_per_page} rows only";
+                }
+
+                consulta.Transaction = _context.Database.CurrentTransaction?.GetDbTransaction();
+
+                Utils.CrearParametre(consulta, "%" + origen + "%", "ORIGEN", System.Data.DbType.String);
+                Utils.CrearParametre(consulta, "%" + destino + "%", "DESTI", System.Data.DbType.String);
+
+                if (horaSalida.HasValue)
+                {
+                    Utils.CrearParametre(consulta, horaSalida.Value.ToString(@"hh\:mm"), "HORA_SORTIDA", System.Data.DbType.String);
+                }
+                if (horaLlegada.HasValue)
+                {
+                    Utils.CrearParametre(consulta, horaLlegada.Value.ToString(@"hh\:mm"), "HORA_ARRIBADA", System.Data.DbType.String);
+                }
+
+                using (var reader = consulta.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        resultat.Add(LeerTrayecto(reader));
+                    }
+                }
+            }
+
+            return resultat;
+        }
+
         // Método auxiliar para no repetir el mapeo
         private Trayecto LeerTrayecto(DbDataReader reader)
         {
@@ -199,6 +308,9 @@ namespace DAO
             }
 
             var trayecto = new Trayecto(id, nom, data, usuario, medio);
+
+            int ordValidat = reader.GetOrdinal("validat");
+            trayecto.Validado = !reader.IsDBNull(ordValidat) && Convert.ToInt32(reader[ordValidat]) == 1;
 
             // Origen y destino (se asignan por propiedad)
             trayecto.Origen = new Estacion(

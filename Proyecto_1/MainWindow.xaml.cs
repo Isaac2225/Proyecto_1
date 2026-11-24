@@ -39,7 +39,7 @@ namespace Proyecto_1
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             DAOTrayecto DAOTrayecto = new DAOTrayecto(_context);
-            dgTrayecto.ItemsSource = DAOTrayecto.GetTrayectos(
+            dgTrayecto.ItemsSource = DAOTrayecto.GetTrayectosValidados(
                 txtOrigen.Text,
                 txtDestino.Text,
                 horaSalida: TimeSpan.TryParse(cboHoraSalida.SelectedItem?.ToString(), out var hs) ? hs : (TimeSpan?)null,
