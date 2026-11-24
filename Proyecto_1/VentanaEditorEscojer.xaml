@@ -40,7 +40,7 @@
             <Border Grid.Row="2" BorderBrush="Black" BorderThickness="2" Margin="10">
                 <StackPanel>
                     <TextBlock Text="Trayectos"/>
-                    <DataGrid x:Name="dtgTrayectos" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="180"/>
+                    <DataGrid x:Name="dtgTrayectos" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="180" MouseDoubleClick="dtgTrayectos_MouseDoubleClick" IsReadOnly="True"/>
                 </StackPanel>
             </Border>
 
@@ -112,10 +112,10 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBox x:Name="txtNombre" FontSize="15" Width="100"/>
-                        <TextBox x:Name="txtOrigen" FontSize="15" Width="100"/>
-                        <TextBox x:Name="txtDestino" FontSize="15" Width="100"/>
-                        <ComboBox x:Name="cboMedioTransporte" FontSize="15" Width="100"/>
+                        <TextBox x:Name="txtNombre" FontSize="15" Width="150"/>
+                        <TextBox x:Name="txtOrigen" FontSize="15" Width="150"/>
+                        <TextBox x:Name="txtDestino" FontSize="15" Width="150"/>
+                        <ComboBox x:Name="cboMedioTransporte" FontSize="15" Width="150"/>
                     </StackPanel>
                 </Grid>
             </Border>

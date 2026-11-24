@@ -64,5 +64,16 @@ namespace Proyecto_1
                 MessageBox.Show("Seleccione un trayecto para eliminar.");
             }
         }
+
+        private void dtgTrayectos_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (dtgTrayectos.SelectedItem is Trayecto selectedTrayecto)
+            {
+                txtNombre.Text = selectedTrayecto.Nombre;
+                txtOrigen.Text = selectedTrayecto.Origen.ToString();
+                txtDestino.Text = selectedTrayecto.Destino.ToString();
+
+            }
+        }
     }
 }
