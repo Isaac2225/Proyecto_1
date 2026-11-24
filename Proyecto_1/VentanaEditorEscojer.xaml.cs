@@ -88,8 +88,8 @@ namespace Proyecto_1
         private void Button_Click_Insertar(object sender, RoutedEventArgs e)
         {
             DAOTrayecto trayectoDAO = new DAOTrayecto(_context);
-
             
+            //trayectoDAO.InsertTrayecto(new Trayecto(txtNombre.Text, DateTime.Now, ))
         }
 
         private void Button_Click_Modificar(object sender, RoutedEventArgs e)

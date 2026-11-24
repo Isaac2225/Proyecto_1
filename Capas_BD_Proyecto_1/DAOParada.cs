@@ -94,7 +94,7 @@ namespace DAO
                         DateTime? llegada = reader.IsDBNull(ordArribada) ? (DateTime?)null : reader.GetDateTime(ordArribada);
                         DateTime? salida = reader.IsDBNull(ordSortida) ? (DateTime?)null : reader.GetDateTime(ordSortida);
 
-                        Trayecto trayecto = new Trayecto(trayecto_id, null, default(DateTime), null, null);
+                        Trayecto trayecto = new Trayecto(null, default(DateTime), null);
 
                         resultat.Add(new Parada(trayecto, idEstacion, orden, nom, llegada, salida));
                     }

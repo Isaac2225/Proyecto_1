@@ -307,7 +307,7 @@ namespace DAO
                     reader.GetString(reader.GetOrdinal("m_nom")));
             }
 
-            var trayecto = new Trayecto(id, nom, data, usuario, medio);
+            var trayecto = new Trayecto(nom, data, medio);
 
             int ordValidat = reader.GetOrdinal("validat");
             trayecto.Validado = !reader.IsDBNull(ordValidat) && Convert.ToInt32(reader[ordValidat]) == 1;
@@ -379,9 +379,13 @@ namespace DAO
                     oc.BindByName = true;
                 }
 
-                consulta.CommandText = @"insert into trajecte (nom, datacreacio, validat, usuari_id, mitja_id)
-                                 values (:NOM, :DATACREACIO, :VALIDAT, :USUARI_ID, :MITJA_ID)
-                                 returning id into :NEW_ID";
+                consulta.CommandText = @"insert into trajecte values (
+                                            (select nvl(max(id), 0) + 1 from trajecte),
+                                            :NOM,
+                                            :DATACREACIO,
+                                            :VALIDAT,
+                                            :USUARI_ID,
+                                            :MITJA_ID) returning id into :NEW_ID";
 
                 consulta.Transaction = transaccio.GetDbTransaction();
 
@@ -390,7 +394,6 @@ namespace DAO
                 Utils.CrearParametre(consulta, t.Validado ? 1 : 0, "VALIDAT", System.Data.DbType.Int32); 
 
                 // Extraemos el ID de los objetos anidados
-                Utils.CrearParametre(consulta, t.Id_usuario?.Id, "USUARI_ID", System.Data.DbType.Int32);
                 Utils.CrearParametre(consulta, t.Medio?.Id, "MITJA_ID", System.Data.DbType.Int32);
 
                 var pId = consulta.CreateParameter();
@@ -446,7 +449,6 @@ namespace DAO
                 Utils.CrearParametre(consulta, t.Nombre, "NOM", System.Data.DbType.String);
                 Utils.CrearParametre(consulta, t.FechaCreacion, "DATACREACIO", System.Data.DbType.Date);
                 Utils.CrearParametre(consulta, t.Validado ? 1 : 0, "VALIDAT", System.Data.DbType.Int32);
-                Utils.CrearParametre(consulta, t.Id_usuario?.Id, "USUARI_ID", System.Data.DbType.Int32);
                 Utils.CrearParametre(consulta, t.Medio?.Id, "MITJA_ID", System.Data.DbType.Int32);
                 Utils.CrearParametre(consulta, t.Id, "ID", System.Data.DbType.Int32);
 

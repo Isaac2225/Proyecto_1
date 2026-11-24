@@ -111,7 +111,6 @@ namespace Proyecto_1
                 sb.AppendLine($"Validado: {(t.Validado ? "Sí" : "No")}");
                 sb.AppendLine("----------------------------------------");
 
-                sb.AppendLine($"Usuario: {t.Id_usuario?.Nombre ?? "No asignado"}");
                 sb.AppendLine($"Medio de transporte: {t.Medio?.Nombre ?? "No especificado"}");
                 sb.AppendLine($"Origen: {t.Origen?.Nombre ?? "No especificado"}");
                 sb.AppendLine($"Destino: {t.Destino?.Nombre ?? "No especificado"}");
