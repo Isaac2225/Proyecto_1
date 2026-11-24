@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Capas_BD_Proyecto_1/DAO.csproj" Id="83066dde-c9ae-40cb-9aab-954a6048610c" />
+  <Project Path="IDAOCiudad/IDAO.csproj" Id="469633fc-eec5-4b4c-b6b8-402ca7579a7d" />
+  <Project Path="Modelo/Modelo.csproj" />
+  <Project Path="ProvesBD/ProvesBD.csproj" Id="88f84658-6c8b-4d51-89ec-0472ed35abc5" />
+  <Project Path="Proyecto_1/Proyecto_1.csproj" />
+</Solution>

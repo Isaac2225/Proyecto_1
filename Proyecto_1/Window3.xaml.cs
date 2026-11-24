@@ -1,0 +1,121 @@
+﻿
+
+
+
+using DAO;
+using Modelo;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Security.RightsManagement;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+
+namespace Proyecto_1
+{
+    /// <summary>
+    /// Lógica de interacción para Window3.xaml
+    /// </summary>
+    public partial class Window3 : Window
+    {
+        public Window3()
+        {
+            InitializeComponent();
+        }
+
+        private readonly MyDBContext _context = new MyDBContext();
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            bool datosCorrectos = VerificarUsuario(txtMail.Text, txtPwd.Text);
+
+            if (datosCorrectos)
+            {
+                DAOUsuario usuarioDAO = new DAOUsuario(_context);
+                Usuario usuario = usuarioDAO.GetUsuario(txtMail.Text, txtPwd.Text);
+
+                switch (usuario.Tipo)
+                {
+                    case 'A':
+                        Window4 admin = new Window4();
+                        admin.Show();
+                        this.Close();
+                        break;
+                    case 'E':
+                        VentanaEditorEscojer ventanaEscojer = new VentanaEditorEscojer();
+                        ventanaEscojer.Show();
+                        this.Close();
+                        break;
+                }
+
+                //Implementar para las otras ventanas.
+                MainWindow main = new MainWindow();
+                main.Close();
+            }
+
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            Window2 window = new Window2();
+            window.Show();
+            this.Close();
+        }
+
+        private bool VerificarUsuario(string user, string pwd)
+        {
+            DAOUsuario usuarioDAO = new DAOUsuario(_context);
+
+            int filasMail = usuarioDAO.GetNumeroUsuariosByUsrPwd(user, null);
+            int filasPwd = usuarioDAO.GetNumeroUsuariosByUsrPwd(null, pwd);
+            int filasGeneral = usuarioDAO.GetNumeroUsuariosByUsrPwd(user, pwd);
+
+            if (filasMail == 0)
+            {
+                txtErrorUsr.Visibility = Visibility.Visible;
+
+                if (filasPwd == 0)
+                {
+                    txtErrorPwd.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    txtErrorPwd.Visibility = Visibility.Collapsed;
+                }
+
+                return false;
+            }
+
+            if (filasPwd == 0)
+            {
+                if (filasMail > 0)
+                {
+                    txtErrorUsr.Visibility = Visibility.Collapsed;
+                }
+
+                txtErrorPwd.Visibility = Visibility.Visible;
+                return false;
+            }
+
+            if (filasGeneral == 0)
+            {
+                txtErrorDB.Visibility = Visibility.Visible;
+
+                return false;
+            }
+
+            return true;
+        }
+    }
+}
+
+
+
+
