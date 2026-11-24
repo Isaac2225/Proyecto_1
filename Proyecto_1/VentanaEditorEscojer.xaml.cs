@@ -84,5 +84,17 @@ namespace Proyecto_1
             cboMedioTransporte.Items.Add("Avión");
             cboMedioTransporte.Items.Add("Barco");
         }
+
+        private void Button_Click_Insertar(object sender, RoutedEventArgs e)
+        {
+            DAOTrayecto trayectoDAO = new DAOTrayecto(_context);
+
+            
+        }
+
+        private void Button_Click_Modificar(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
