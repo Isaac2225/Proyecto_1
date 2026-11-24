@@ -39,7 +39,7 @@ namespace Proyecto_1
         {
             if (dtgTrayectos.SelectedItem is Trayecto selectedTrayecto)
             {
-                using (var transaccio = _context.Database.BeginTransaction())
+                using (var transaccion = _context.Database.BeginTransaction())
                 {
                     try
                     {
@@ -48,13 +48,13 @@ namespace Proyecto_1
 
                         if (eliminado)
                         {
-                            transaccio.Commit();
+                            transaccion.Commit();
                             CargarDataGrids();
                         }
                     }
                     catch (Exception ex)
                     {
-                        transaccio.Rollback();
+                        transaccion.Rollback();
                         MessageBox.Show("Error al eliminar: " + ex.Message);
                     }
                 }
