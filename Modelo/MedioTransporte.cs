@@ -31,9 +31,9 @@ namespace Modelo
             Id = id;
         }
 
-        public MedioTransporte(int id, string nombre)
+        public MedioTransporte(string nombre)
         {
-            Id = id;
+            Id = 0;
             Nombre = nombre;
         }
 

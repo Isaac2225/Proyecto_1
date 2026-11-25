@@ -71,13 +71,12 @@ namespace Proyecto_1
             if (dtgTrayectos.SelectedItem is Trayecto selectedTrayecto)
             {
                 txtNombre.Text = selectedTrayecto.Nombre;
-                txtOrigen.Text = selectedTrayecto.Origen.ToString();
-                txtDestino.Text = selectedTrayecto.Destino.ToString();
-
+                txtOrigen.Text = selectedTrayecto.Origen?.Nombre ?? "";
+                txtDestino.Text = selectedTrayecto.Destino?.Nombre ?? "";
             }
         }
 
-        private void LlenarCboMedios()
+        private void LlenarCboMedios()  
         {
             cboMedioTransporte.Items.Add("Bus");
             cboMedioTransporte.Items.Add("Tren");
@@ -87,12 +86,59 @@ namespace Proyecto_1
 
         private void Button_Click_Insertar(object sender, RoutedEventArgs e)
         {
-            DAOTrayecto trayectoDAO = new DAOTrayecto(_context);
-            
-            //trayectoDAO.InsertTrayecto(new Trayecto(txtNombre.Text, DateTime.Now, ))
+            using (var transaccio = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    DAOEstacion estacionDAO = new DAOEstacion(_context);
+                    DAOTrayecto trayectoDAO = new DAOTrayecto(_context);
+
+                    // 1. Buscar las estaciones por nombre usando tu DAOEstacion
+                    Estacion origen = estacionDAO.GetEstacion(txtOrigen.Text);
+                    Estacion destino = estacionDAO.GetEstacion(txtDestino.Text);
+
+                    if (origen == null || destino == null)
+                    {
+                        MessageBox.Show("La estación de origen o destino no existe en la base de datos.");
+                        transaccio.Rollback();
+                        return;
+                    }
+
+                    // 2. Comprobar que hay un medio de transporte seleccionado
+                    if (cboMedioTransporte.SelectedItem is not MedioTransporte medio)
+                    {
+                        MessageBox.Show("Selecciona un medio de transporte.");
+                        transaccio.Rollback();
+                        return;
+                    }
+
+                    // 3. Crear el trayecto con Origen y Destino asignados
+                    Trayecto nuevoTrayecto = new Trayecto(txtNombre.Text, DateTime.Now, medio);
+                    nuevoTrayecto.Origen = origen;
+                    nuevoTrayecto.Destino = destino;
+
+                    // 4. Insertar y confirmar
+                    if (trayectoDAO.InsertTrayecto(nuevoTrayecto))
+                    {
+                        transaccio.Commit();
+                        MessageBox.Show("Trayecto insertado correctamente.");
+                        // Aquí puedes volver a cargar dtgTrayectos para ver el nuevo registro
+                    }
+                }
+                catch (Exception ex)
+                {
+                    transaccio.Rollback();
+                    MessageBox.Show("Error al insertar: " + ex.Message);
+                }
+            }
         }
 
         private void Button_Click_Modificar(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void dtgParadas_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }

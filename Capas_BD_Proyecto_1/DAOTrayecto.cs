@@ -297,13 +297,11 @@ namespace DAO
                     reader.GetDateTime(reader.GetOrdinal("u_dataregistre")));
             }
 
-            // Medio de transporte (puede ser NULL)
             MedioTransporte medio = null;
             int ordMitja = reader.GetOrdinal("mitja_id");
             if (!reader.IsDBNull(ordMitja))
             {
                 medio = new MedioTransporte(
-                    Convert.ToInt32(reader[ordMitja]),
                     reader.GetString(reader.GetOrdinal("m_nom")));
             }
 
@@ -379,22 +377,32 @@ namespace DAO
                     oc.BindByName = true;
                 }
 
-                consulta.CommandText = @"insert into trajecte values (
-                                            (select nvl(max(id), 0) + 1 from trajecte),
-                                            :NOM,
-                                            :DATACREACIO,
-                                            :VALIDAT,
-                                            :USUARI_ID,
-                                            :MITJA_ID) returning id into :NEW_ID";
+                consulta.CommandText = @"insert into trajecte (
+                            ID,
+                            NOM,
+                            DATACREACIO,
+                            VALIDAT,
+                            MITJA_ID,
+                            ESTACIO_ORIGEN_ID,
+                            ESTACIO_DESTI_ID
+                        ) values (
+                            (select nvl(max(id), 0) + 1 from trajecte),
+                            :NOM,
+                            :DATACREACIO,
+                            :VALIDAT,
+                            :MITJA_ID,
+                            :ORIGEN_ID,
+                            :DESTI_ID
+                        ) returning id into :NEW_ID";
 
                 consulta.Transaction = transaccio.GetDbTransaction();
 
                 Utils.CrearParametre(consulta, t.Nombre, "NOM", System.Data.DbType.String);
                 Utils.CrearParametre(consulta, t.FechaCreacion, "DATACREACIO", System.Data.DbType.Date);
-                Utils.CrearParametre(consulta, t.Validado ? 1 : 0, "VALIDAT", System.Data.DbType.Int32); 
-
-                // Extraemos el ID de los objetos anidados
+                Utils.CrearParametre(consulta, t.Validado ? 1 : 0, "VALIDAT", System.Data.DbType.Int32);
                 Utils.CrearParametre(consulta, t.Medio?.Id, "MITJA_ID", System.Data.DbType.Int32);
+                Utils.CrearParametre(consulta, t.Origen?.Id, "ORIGEN_ID", System.Data.DbType.Int32);
+                Utils.CrearParametre(consulta, t.Destino?.Id, "DESTI_ID", System.Data.DbType.Int32);
 
                 var pId = consulta.CreateParameter();
                 pId.ParameterName = "NEW_ID";
