@@ -20,7 +20,7 @@ namespace DAO
             _context = c;
         }
 
-        public Trayecto GetTrayecto(int id)
+        public Trayecto GetTrayecto(string nombre)
         {
             var connexio = _context.Database.GetDbConnection();
             if (connexio.State == System.Data.ConnectionState.Closed)
@@ -35,13 +35,27 @@ namespace DAO
                     oc.BindByName = true;
                 }
 
-                consulta.CommandText = @"select id, nom, datacreacio, validat, usuari_id, mitja_id
-                                   from trajecte
-                                  where id = :ID";
+                consulta.CommandText = @"
+                    SELECT
+                        t.*,
+                        eo.nom_es       AS nom_origen,
+                        ed.nom_es       AS nom_desti,
+                        u.email         AS u_email,
+                        u.nom           AS u_nom,
+                        u.password      AS u_password,
+                        u.tipus         AS u_tipus,
+                        u.data_registre AS u_dataregistre,
+                        m.nom           AS m_nom
+                    FROM trajecte t
+                    JOIN estacio eo ON eo.id_es = t.estacio_origen_id
+                    JOIN estacio ed ON ed.id_es = t.estacio_desti_id
+                    LEFT JOIN usuari u ON u.id = t.usuari_id
+                    LEFT JOIN mitja_transport m ON m.id = t.mitja_id
+                    WHERE t.nom = :NOMBRE";
 
                 consulta.Transaction = _context.Database.CurrentTransaction?.GetDbTransaction();
 
-                Utils.CrearParametre(consulta, id, "ID", System.Data.DbType.Int32);
+                Utils.CrearParametre(consulta, nombre, "NOMBRE", System.Data.DbType.String);
 
                 using (var reader = consulta.ExecuteReader())
                 {
@@ -306,6 +320,7 @@ namespace DAO
             }
 
             var trayecto = new Trayecto(nom, data, medio);
+            trayecto.Id = id;
 
             int ordValidat = reader.GetOrdinal("validat");
             trayecto.Validado = !reader.IsDBNull(ordValidat) && Convert.ToInt32(reader[ordValidat]) == 1;
@@ -445,12 +460,13 @@ namespace DAO
                 }
 
                 consulta.CommandText = @"update trajecte
-                                    set nom = :NOM,
-                                        datacreacio = :DATACREACIO,
-                                        validat = :VALIDAT,
-                                        usuari_id = :USUARI_ID,
-                                        mitja_id = :MITJA_ID
-                                  where id = :ID";
+                            set nom = :NOM,
+                                datacreacio = :DATACREACIO,
+                                validat = :VALIDAT,
+                                mitja_id = :MITJA_ID,
+                                estacio_origen_id = :ORIGEN_ID,
+                                estacio_desti_id = :DESTI_ID
+                          where id = :ID";
 
                 consulta.Transaction = transaccio.GetDbTransaction();
 
@@ -458,6 +474,8 @@ namespace DAO
                 Utils.CrearParametre(consulta, t.FechaCreacion, "DATACREACIO", System.Data.DbType.Date);
                 Utils.CrearParametre(consulta, t.Validado ? 1 : 0, "VALIDAT", System.Data.DbType.Int32);
                 Utils.CrearParametre(consulta, t.Medio?.Id, "MITJA_ID", System.Data.DbType.Int32);
+                Utils.CrearParametre(consulta, t.Origen?.Id, "ORIGEN_ID", System.Data.DbType.Int32);
+                Utils.CrearParametre(consulta, t.Destino?.Id, "DESTI_ID", System.Data.DbType.Int32);
                 Utils.CrearParametre(consulta, t.Id, "ID", System.Data.DbType.Int32);
 
                 int numeroFilesAfectades = consulta.ExecuteNonQuery();
