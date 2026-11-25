@@ -35,7 +35,8 @@
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
                       CanUserAddRows="False"
-                      CanUserDeleteRows="False">
+                      CanUserDeleteRows="False"
+                      MouseDoubleClick="dtgParadas_MouseDoubleClick">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Trayecto" Binding="{Binding Idtrayecto.Id}" />
                             <DataGridTextColumn Header="Id Estación" Binding="{Binding IdEstacion}" />
@@ -49,7 +50,7 @@
                 </Grid>
             </Border>
 
-            <Button Grid.Row="1" Content="Eliminar" Height="30" Width="100" Margin="0,5,0,5" HorizontalAlignment="Center"/>
+            <Button Grid.Row="1" Content="Eliminar" Height="30" Width="100" Margin="0,5,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Click="Button_Click_Eliminar_Paradas"/>
 
             <Border Grid.Row="2" BorderBrush="Black" BorderThickness="2" Margin="10,5,10,5">
                 <Grid>
@@ -81,7 +82,7 @@
             </Border>
 
             <Button Grid.Row="3" Content="Eliminar" Height="30" Width="100" Margin="0,5,0,10" HorizontalAlignment="Center"
-                    Click="Button_Click_Eliminar"/>
+                    Click="Button_Click_Eliminar_Trayectos"/>
         </Grid>
 
         <!-- COLUMNA DERECHA: FORMULARIOS -->

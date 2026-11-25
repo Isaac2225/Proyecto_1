@@ -19,7 +19,8 @@ namespace Proyecto_1
     /// </summary>
     public partial class VentanaEditorEscojer : Window
     {
-        private bool camposLlenos = false;
+        private bool camposLlenosTrayecto = false;
+        private bool camposLlenosParada = false;
         private readonly MyDBContext _context;
         public VentanaEditorEscojer()
         {
@@ -37,7 +38,7 @@ namespace Proyecto_1
             dtgParadas.ItemsSource = paradaDAO.GetParadas();
         }
 
-        private void Button_Click_Eliminar(object sender, RoutedEventArgs e)
+        private void Button_Click_Eliminar_Trayectos(object sender, RoutedEventArgs e)
         {
             if (dtgTrayectos.SelectedItem is Trayecto selectedTrayecto)
             {
@@ -75,7 +76,7 @@ namespace Proyecto_1
                 txtOrigen.Text = selectedTrayecto.Origen?.Nombre ?? "";
                 txtDestino.Text = selectedTrayecto.Destino?.Nombre ?? "";
             }
-            camposLlenos = true;
+            camposLlenosTrayecto = true;
         }
 
         private void LlenarCboMedios()  
@@ -125,7 +126,7 @@ namespace Proyecto_1
                     nuevoTrayecto.Origen = origen;
                     nuevoTrayecto.Destino = destino;
 
-                    if(!camposLlenos)
+                    if(!camposLlenosTrayecto)
                     {
                         if (trayectoDAO.InsertTrayecto(nuevoTrayecto))
                         {
@@ -184,7 +185,7 @@ namespace Proyecto_1
 
                     trayectoAux = trayectoDAO.GetTrayecto(txtNombre.Text);
 
-                    if(camposLlenos)
+                    if(camposLlenosTrayecto)
                     {
                         if (trayectoAux != null)
                         {
@@ -215,6 +216,21 @@ namespace Proyecto_1
         }
 
         private void dtgParadas_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void dtgParadas_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (dtgParadas.SelectedItem is Parada selectedParada)
+            {
+                txtHoraLlegada.Text = selectedParada.HoraLlegada?.ToString("HH:mm") ?? "";
+                txtHoraSalida.Text = selectedParada.HoraSalida?.ToString("HH:mm") ?? "";
+            }
+            camposLlenosParada = true;
+        }
+
+        private void Button_Click_Eliminar_Paradas(object sender, RoutedEventArgs e)
         {
 
         }
