@@ -101,7 +101,7 @@ namespace DAO
         public int GetNumeroUsuariosByUsrPwd(string usr, string pwd)
         {
             var connexio = _context.Database.GetDbConnection();
-            if (connexio.State == System.Data.ConnectionState.Closed) connexio.Open();
+            //if (connexio.State == System.Data.ConnectionState.Closed) connexio.Open();
 
             using (var consulta = connexio.CreateCommand())
             {

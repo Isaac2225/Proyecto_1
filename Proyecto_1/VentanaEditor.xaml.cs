@@ -17,12 +17,12 @@ namespace Proyecto_1
     /// <summary>
     /// Lógica de interacción para VentanaEditorEscojer.xaml
     /// </summary>
-    public partial class VentanaEditorEscojer : Window
+    public partial class VentanaEditor : Window
     {
         private bool camposLlenosTrayecto = false;
         private bool camposLlenosParada = false;
         private readonly MyDBContext _context;
-        public VentanaEditorEscojer()
+        public VentanaEditor()
         {
             InitializeComponent();
             _context = new MyDBContext();

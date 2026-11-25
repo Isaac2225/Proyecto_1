@@ -49,7 +49,7 @@ namespace Proyecto_1
                         this.Close();
                         break;
                     case 'E':
-                        VentanaEditorEscojer ventanaEscojer = new VentanaEditorEscojer();
+                        VentanaEditor ventanaEscojer = new VentanaEditor();
                         ventanaEscojer.Show();
                         this.Close();
                         break;

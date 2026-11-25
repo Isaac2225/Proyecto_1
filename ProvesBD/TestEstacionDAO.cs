@@ -6,7 +6,6 @@ namespace ProvesBD
     [TestClass]
     public sealed class TestEstacionDAO
     {
-        // ---------- SELECT ----------
         [TestMethod]
         public void GetEstaciones_SinFiltros_Devuelve10()
         {

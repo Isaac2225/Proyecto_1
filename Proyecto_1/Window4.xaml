@@ -8,11 +8,35 @@
         Title="Window4" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="450"/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <DataGrid Grid.Column="0" Margin="40"/>
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <Border BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0">
+                <StackPanel Margin="20">
+                    <TextBlock Text="Usuarios" FontSize="20" Margin="10"/>
+                    <DataGrid Height="200" Width="300"/>
+                </StackPanel>
+            </Border>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <Button Content="Bloquear" Grid.Column="0" Margin="10"/>
+                <Button Content="Desbloquear" Grid.Column="2" Margin="10"/>
+            </Grid>
+        </Grid>
 
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
@@ -20,20 +44,21 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
-            <Border BorderBrush="Black" BorderThickness="2" Grid.Row="0" Margin="10">
-                <DataGrid Margin="30"/>
+            <Border BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0">
+                <StackPanel Margin="20">
+                    <TextBlock Text="Trayectos" FontSize="20" Margin="10"/>
+                    <DataGrid Height="200" Width="300"/>
+                </StackPanel>
             </Border>
 
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Content="Hacer visible" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Margin="10"/>
-                <Button Content="Validar" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Margin="10"/>
-                <Button Content="Hacer invisible" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Margin="10"/>
+                <Button Content="Validar" Grid.Column="1" Margin="10"/>
             </Grid>
         </Grid>
     </Grid>
