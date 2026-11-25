@@ -215,11 +215,6 @@ namespace Proyecto_1
             }
         }
 
-        private void dtgParadas_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
         private void dtgParadas_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (dtgParadas.SelectedItem is Parada selectedParada)
@@ -232,7 +227,66 @@ namespace Proyecto_1
 
         private void Button_Click_Eliminar_Paradas(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show("Funcionalidad de eliminar paradas aún no implementada.");
+        }
 
+        private void Button_Click_Insertar_Paradas(object sender, RoutedEventArgs e)
+        {
+            if (camposLlenosParada)
+            {
+                MessageBox.Show("No se puede insertar una nueva parada porque has seleccionado una parada previamente.");
+                return;
+            }
+
+            if (dtgTrayectos.SelectedItem is not Trayecto trayectoSeleccionado)
+            {
+                MessageBox.Show("Selecciona primero un trayecto en la tabla de trayectos.");
+                return;
+            }
+
+            using (var transaccio = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    DateTime? horaLlegada = string.IsNullOrWhiteSpace(txtHoraLlegada.Text)
+                        ? null
+                        : DateTime.ParseExact(txtHoraLlegada.Text.Trim(), "HH:mm", null);
+
+                    DateTime? horaSalida = string.IsNullOrWhiteSpace(txtHoraSalida.Text)
+                        ? null
+                        : DateTime.ParseExact(txtHoraSalida.Text.Trim(), "HH:mm", null);
+
+                    if (horaLlegada == null && horaSalida == null)
+                    {
+                        MessageBox.Show("Debes indicar al menos la hora de llegada o la de salida.");
+                        transaccio.Rollback();
+                        return;
+                    }
+
+                    DAOParada paradaDAO = new DAOParada(_context);
+
+                    int idEstacion = trayectoSeleccionado.Origen.Id;
+
+                    Parada nuevaParada = new Parada(trayectoSeleccionado, idEstacion, 0, "", horaLlegada, horaSalida);
+
+                    if (paradaDAO.InsertParada(nuevaParada))
+                    {
+                        transaccio.Commit();
+                        dtgParadas.ItemsSource = paradaDAO.GetParadas();
+                        MessageBox.Show("Parada insertada correctamente.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    transaccio.Rollback();
+                    MessageBox.Show("Error al insertar: " + ex.Message);
+                }
+            }
+        }
+
+        private void Button_Click_Modificar_Paradas(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Funcionalidad de modificar paradas aún no implementada.");
         }
     }
 }

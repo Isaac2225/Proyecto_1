@@ -95,6 +95,7 @@ namespace DAO
                         DateTime? salida = reader.IsDBNull(ordSortida) ? (DateTime?)null : reader.GetDateTime(ordSortida);
 
                         Trayecto trayecto = new Trayecto(null, default(DateTime), null);
+                        trayecto.Id = trayecto_id;
 
                         resultat.Add(new Parada(trayecto, idEstacion, orden, nom, llegada, salida));
                     }
@@ -141,9 +142,26 @@ namespace DAO
             {
                 if (consulta is OracleCommand oc) oc.BindByName = true;
 
-                // estacio_numero: el modelo Parada no lo tiene, se fija a 1 (estación existente)
-                consulta.CommandText = @"insert into parada (trajecte_id, ordre, nom, estacio_numero, horapas)
-                                 values (:TRAJECTE_ID, :ORDRE, :NOM, :ESTACIO_NUMERO, :HORAPAS)";
+                consulta.CommandText = @"insert into parada (
+                            TRAJECTE_ID,
+                            ESTACIO_ID,
+                            ORDRE,
+                            HORA_ARRIBADA,
+                            HORA_SORTIDA
+                        ) values (
+                            :TRAJECTE_ID,
+                            :ESTACIO_ID,
+                            (select nvl(max(ordre), 0) + 1 from parada where trajecte_id = :TRAJECTE_ID),
+                            :HORA_ARRIBADA,
+                            :HORA_SORTIDA
+                        )";
+
+                consulta.Transaction = transaccio.GetDbTransaction();
+
+                Utils.CrearParametre(consulta, p.Id_trayecto.Id, "TRAJECTE_ID", System.Data.DbType.Int32);
+                Utils.CrearParametre(consulta, p.IdEstacion, "ESTACIO_ID", System.Data.DbType.Int32);
+                Utils.CrearParametre(consulta, (object)p.HoraLlegada ?? DBNull.Value, "HORA_ARRIBADA", System.Data.DbType.DateTime);
+                Utils.CrearParametre(consulta, (object)p.HoraSalida ?? DBNull.Value, "HORA_SORTIDA", System.Data.DbType.DateTime);
 
                 consulta.Transaction = transaccio.GetDbTransaction();
 
