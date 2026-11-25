@@ -368,5 +368,23 @@ namespace Proyecto_1
                 }
             }
         }
+
+        private void Button_Click_Limpiar_Campos_Parada(object sender, RoutedEventArgs e)
+        {
+            txtHoraLlegada.Text = "";
+            txtHoraSalida.Text = "";
+            camposLlenosTrayecto = false;
+        }
+
+        private void Button_Click_Limpiar_Campos_Trayecto(object sender, RoutedEventArgs e)
+        {
+            txtNombre.Text = "";
+            txtOrigen.Text = "";
+            txtDestino.Text = "";
+            cboMedioTransporte.SelectedItem = null;
+            txtHoraLlegada.Text = "";
+            txtHoraSalida.Text = "";
+            camposLlenosParada = false;
+        }
     }
 }

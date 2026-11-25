@@ -122,7 +122,8 @@
                         </Grid.ColumnDefinitions>
 
                         <Button Grid.Column="0" Content="Insertar" Width="100" Height="30" Margin="10" HorizontalAlignment="Center" Click="Button_Click_Insertar_Paradas"/>
-                        <Button Grid.Column="2" Content="Modificar" Width="100" Height="30" Margin="10" HorizontalAlignment="Center" Click="Button_Click_Modificar_Paradas"/>
+                        <Button Grid.Column="1" Content="Modificar" Width="100" Height="30" Margin="10" HorizontalAlignment="Center" Click="Button_Click_Modificar_Paradas"/>
+                        <Button Grid.Column="2" Content="Limpiar campos" Width="100" Height="30" Margin="10" HorizontalAlignment="Center" Click="Button_Click_Limpiar_Campos_Parada"/>
                     </Grid>
                 </Grid>
             </Border>
@@ -167,7 +168,8 @@
                         </Grid.ColumnDefinitions>
 
                         <Button Content="Insertar" Width="100" Margin="10" HorizontalAlignment="Center" Grid.Column="0" Click="Button_Click_Insertar"/>
-                        <Button Content="Modificar" Width="100" Margin="10" HorizontalAlignment="Center" Grid.Column="2" Click="Button_Click_Modificar"/>
+                        <Button Content="Modificar" Width="100" Margin="10" HorizontalAlignment="Center" Grid.Column="1" Click="Button_Click_Modificar"/>
+                        <Button Content="Limpiar campos" Width="100" Margin="10" HorizontalAlignment="Center" Grid.Column="2" Click="Button_Click_Limpiar_Campos_Trayecto"/>
                     </Grid>
                 </Grid>
             </Border>
