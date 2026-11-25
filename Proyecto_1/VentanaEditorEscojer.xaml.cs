@@ -231,7 +231,35 @@ namespace Proyecto_1
 
         private void Button_Click_Eliminar_Paradas(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Funcionalidad de eliminar paradas aún no implementada.");
+            if (dtgParadas.SelectedItem is Parada selectedParada)
+            {
+                using (var transaccion = _context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        DAOParada paradaDAO = new DAOParada(_context);
+                        bool eliminado = paradaDAO.DeleteParada(selectedParada.Id_trayecto.Id, selectedParada.Orden);
+
+                        if (eliminado)
+                        {
+                            transaccion.Commit();
+                            CargarDataGrids();
+                            txtHoraLlegada.Text = "";
+                            txtHoraSalida.Text = "";
+                            camposLlenosParada = false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        transaccion.Rollback();
+                        MessageBox.Show("Error al eliminar: " + ex.Message);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Seleccione una parada para eliminar.");
+            }
         }
 
         private void Button_Click_Insertar_Paradas(object sender, RoutedEventArgs e)
@@ -269,6 +297,7 @@ namespace Proyecto_1
 
                     DAOParada paradaDAO = new DAOParada(_context);
 
+
                     int idEstacion = trayectoSeleccionado.Origen.Id;
 
                     Parada nuevaParada = new Parada(trayectoSeleccionado, idEstacion, 0, "", horaLlegada, horaSalida);
@@ -290,7 +319,54 @@ namespace Proyecto_1
 
         private void Button_Click_Modificar_Paradas(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Funcionalidad de modificar paradas aún no implementada.");
+            if (dtgParadas.SelectedItem is not Parada paradaSeleccionada)
+            {
+                MessageBox.Show("Selecciona primero una parada de la tabla.");
+                return;
+            }
+
+            using (var transaccio = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    DateTime? horaLlegada = string.IsNullOrWhiteSpace(txtHoraLlegada.Text)
+                        ? null
+                        : DateTime.ParseExact(txtHoraLlegada.Text.Trim(), "H:mm", null);
+
+                    DateTime? horaSalida = string.IsNullOrWhiteSpace(txtHoraSalida.Text)
+                        ? null
+                        : DateTime.ParseExact(txtHoraSalida.Text.Trim(), "H:mm", null);
+
+                    if (horaLlegada == null && horaSalida == null)
+                    {
+                        MessageBox.Show("Debes indicar al menos la hora de llegada o la de salida.");
+                        transaccio.Rollback();
+                        return;
+                    }
+
+                    DAOParada paradaDAO = new DAOParada(_context);
+
+                    paradaSeleccionada.HoraLlegada = horaLlegada;
+                    paradaSeleccionada.HoraSalida = horaSalida;
+
+                    if (paradaDAO.UpdateParada(paradaSeleccionada))
+                    {
+                        transaccio.Commit();
+                        dtgParadas.ItemsSource = paradaDAO.GetParadas();
+                        MessageBox.Show("Parada actualizada correctamente.");
+                    }
+                    else
+                    {
+                        transaccio.Rollback();
+                        MessageBox.Show("No se pudo actualizar la parada.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    transaccio.Rollback();
+                    MessageBox.Show("Error al actualizar: " + ex.Message);
+                }
+            }
         }
     }
 }

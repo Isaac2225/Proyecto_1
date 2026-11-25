@@ -18,11 +18,63 @@ namespace DAO
             _context = c;
         }
 
-        public Parada GetParada(int? idTrayecto = null, int? orden = null)
+        public Parada GetParada(string nombre)
         {
-            ObservableCollection<Parada> paradas = GetParadas(idTrayecto?.ToString());
+            var connexio = _context.Database.GetDbConnection();
+            if (connexio.State == System.Data.ConnectionState.Closed)
+            {
+                connexio.Open();
+            }
 
-            return paradas.FirstOrDefault(p => orden == null || p.Orden == orden);
+            using (var consulta = connexio.CreateCommand())
+            {
+                if (consulta is OracleCommand oc)
+                {
+                    oc.BindByName = true;
+                }
+
+                consulta.CommandText = @"select p.trajecte_id,
+                                        p.estacio_id,
+                                        p.ordre,
+                                        e.nom_es,
+                                        p.hora_arribada,
+                                        p.hora_sortida
+                                 from parada p
+                                 join estacio e on e.id_es = p.estacio_id
+                                 where e.nom_es = :NOMBRE";
+
+                consulta.Transaction = _context.Database.CurrentTransaction?.GetDbTransaction();
+
+                Utils.CrearParametre(consulta, nombre, "NOMBRE", System.Data.DbType.String);
+
+                using (var reader = consulta.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        int ordTrayecto = reader.GetOrdinal("trajecte_id");
+                        int ordEstacio = reader.GetOrdinal("estacio_id");
+                        int ordOrdre = reader.GetOrdinal("ordre");
+                        int ordNom = reader.GetOrdinal("nom_es");
+                        int ordArribada = reader.GetOrdinal("hora_arribada");
+                        int ordSortida = reader.GetOrdinal("hora_sortida");
+
+                        int trayecto_id = Convert.ToInt32(reader[ordTrayecto]);
+                        int idEstacion = Convert.ToInt32(reader[ordEstacio]);
+                        int orden = Convert.ToInt32(reader[ordOrdre]);
+                        string nom = reader.GetString(ordNom);
+
+                        DateTime? llegada = reader.IsDBNull(ordArribada) ? (DateTime?)null : reader.GetDateTime(ordArribada);
+                        DateTime? salida = reader.IsDBNull(ordSortida) ? (DateTime?)null : reader.GetDateTime(ordSortida);
+
+                        Trayecto trayecto = new Trayecto(null, default(DateTime), null);
+                        trayecto.Id = trayecto_id;
+
+                        return new Parada(trayecto, idEstacion, orden, nom, llegada, salida);
+                    }
+                }
+            }
+
+            return null;
         }
 
         public ObservableCollection<Parada> GetParadas(
@@ -183,33 +235,42 @@ namespace DAO
         public bool UpdateParada(Parada p)
         {
             var connexio = _context.Database.GetDbConnection();
-            if (connexio.State == System.Data.ConnectionState.Closed) connexio.Open();
+            if (connexio.State == System.Data.ConnectionState.Closed)
+            {
+                connexio.Open();
+            }
 
             var transaccio = _context.Database.CurrentTransaction;
             if (transaccio == null) throw new Exception("NO TRANSACTION");
 
             using (var consulta = connexio.CreateCommand())
             {
-                if (consulta is OracleCommand oc) oc.BindByName = true;
+                if (consulta is OracleCommand oc)
+                {
+                    oc.BindByName = true;
+                }
 
                 consulta.CommandText = @"update parada
-                                    set nom = :NOM,
-                                        horapas = :HORAPAS
+                                    set hora_arribada = :HORA_ARRIBADA,
+                                        hora_sortida  = :HORA_SORTIDA
                                   where trajecte_id = :TRAJECTE_ID
                                     and ordre = :ORDRE";
 
                 consulta.Transaction = transaccio.GetDbTransaction();
 
-                Utils.CrearParametre(consulta, p.Nombre, "NOM", System.Data.DbType.String);
-                Utils.CrearParametre(consulta, p.HoraPaso, "HORAPAS", System.Data.DbType.DateTime);
-                Utils.CrearParametre(consulta, p.Id_trayecto?.Id, "TRAJECTE_ID", System.Data.DbType.Int32);
+                Utils.CrearParametre(consulta, (object)p.HoraLlegada ?? DBNull.Value, "HORA_ARRIBADA", System.Data.DbType.DateTime);
+                Utils.CrearParametre(consulta, (object)p.HoraSalida ?? DBNull.Value, "HORA_SORTIDA", System.Data.DbType.DateTime);
+                Utils.CrearParametre(consulta, p.Id_trayecto.Id, "TRAJECTE_ID", System.Data.DbType.Int32);
                 Utils.CrearParametre(consulta, p.Orden, "ORDRE", System.Data.DbType.Int32);
 
-                if (consulta.ExecuteNonQuery() != 1)
+                int numeroFilesAfectades = consulta.ExecuteNonQuery();
+
+                if (numeroFilesAfectades != 1)
                 {
                     transaccio.Rollback();
                     return false;
                 }
+
                 return true;
             }
         }

@@ -5,7 +5,7 @@ namespace IDAO
 {
     public interface IDAOParada
     {
-        Parada GetParada(int? idTrayecto = null, int? orden = null);
+        Parada GetParada(string nommbre);
 
         ObservableCollection<Parada> GetParadas(
                     string idTrayectoFiltro,
