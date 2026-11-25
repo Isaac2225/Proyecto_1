@@ -53,6 +53,10 @@ namespace Proyecto_1
                         {
                             transaccion.Commit();
                             CargarDataGrids();
+                            txtOrigen.Text = "";
+                            txtDestino.Text = "";
+                            txtNombre.Text = "";
+                            camposLlenosTrayecto = false;
                         }
                     }
                     catch (Exception ex)
