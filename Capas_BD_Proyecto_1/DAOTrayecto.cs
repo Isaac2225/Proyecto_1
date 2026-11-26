@@ -97,7 +97,6 @@ namespace DAO
                     oc.BindByName = true;
                 }
 
-                // JOINs y filtros de hora: solo se añaden si el usuario los ha indicado
                 string joinsHores = "";
                 string filtresHores = "";
 
@@ -513,16 +512,7 @@ namespace DAO
                 Utils.CrearParametre(consulta, id, "ID", System.Data.DbType.Int32);
 
                 int numeroFilesAfectades = consulta.ExecuteNonQuery();
-
-                if (numeroFilesAfectades != 1)
-                {
-                    transaccio.Rollback();
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return numeroFilesAfectades == 1;
             }
         }
     }

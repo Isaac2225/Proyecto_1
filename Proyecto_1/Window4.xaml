@@ -22,7 +22,7 @@
             <Border BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0">
                 <StackPanel Margin="20">
                     <TextBlock Text="Usuarios" FontSize="20" Margin="10"/>
-                    <DataGrid Height="200" Width="300"/>
+                    <DataGrid x:Name="dtgUsuarios" Height="200" Width="300"/>
                 </StackPanel>
             </Border>
 
@@ -47,7 +47,7 @@
             <Border BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0">
                 <StackPanel Margin="20">
                     <TextBlock Text="Trayectos" FontSize="20" Margin="10"/>
-                    <DataGrid Height="200" Width="300"/>
+                    <DataGrid x:Name="dtgTrayectos" Height="200" Width="300"/>
                 </StackPanel>
             </Border>
 

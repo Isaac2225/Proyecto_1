@@ -138,16 +138,19 @@ namespace DAO
 
                     while (reader.Read())
                     {
-                        int trayecto_id = Convert.ToInt32(reader[ordTrayecto]);
+                        Trayecto trayecto = null;
+                        if (!reader.IsDBNull(ordTrayecto))
+                        {
+                            trayecto = new Trayecto(null, default(DateTime), null);
+                            trayecto.Id = reader.GetInt32(ordTrayecto);
+                        }
+
                         int idEstacion = Convert.ToInt32(reader[ordEstacio]);
                         int orden = Convert.ToInt32(reader[ordOrdre]);
                         string nom = reader.GetString(ordNom);
 
                         DateTime? llegada = reader.IsDBNull(ordArribada) ? (DateTime?)null : reader.GetDateTime(ordArribada);
                         DateTime? salida = reader.IsDBNull(ordSortida) ? (DateTime?)null : reader.GetDateTime(ordSortida);
-
-                        Trayecto trayecto = new Trayecto(null, default(DateTime), null);
-                        trayecto.Id = trayecto_id;
 
                         resultat.Add(new Parada(trayecto, idEstacion, orden, nom, llegada, salida));
                     }

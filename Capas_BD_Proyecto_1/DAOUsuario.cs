@@ -5,6 +5,7 @@ using Modelo;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.ObjectModel;
+using System.Text;
 
 namespace DAO
 {
@@ -25,34 +26,54 @@ namespace DAO
             return usuarios[0];
         }
 
-        public ObservableCollection<Usuario> GetUsuarios(string email, string pwd, int offset = 0, int rows_per_page = -1)
+        public ObservableCollection<Usuario> GetUsuarios(
+    string email = null,
+    string pwd = null,
+    bool? bloqueado = null,
+    int offset = 0,
+    int rows_per_page = -1)
         {
             ObservableCollection<Usuario> resultat = new ObservableCollection<Usuario>();
 
             var connexio = _context.Database.GetDbConnection();
-            if (connexio.State == System.Data.ConnectionState.Closed) connexio.Open();
+            if (connexio.State != System.Data.ConnectionState.Open) connexio.Open();
 
             using (var consulta = connexio.CreateCommand())
             {
                 if (consulta is OracleCommand oc) oc.BindByName = true;
 
-                // Actualizamos la consulta para filtrar por EMAIL y PASSWORD
-                consulta.CommandText = @"select ID, EMAIL, NOM, PASSWORD, TIPUS, DATA_REGISTRE 
-                                   from usuari 
-                                  where EMAIL = :EMAIL_TEXT 
-                                    and PASSWORD = :PWD_TEXT 
-                                  order by ID";
+                var sql = new StringBuilder(@"select ID, EMAIL, NOM, PASSWORD, TIPUS, DATA_REGISTRE
+                                        from usuari
+                                       where 1 = 1");
+
+                if (!string.IsNullOrWhiteSpace(email))
+                {
+                    sql.Append(" and EMAIL = :EMAIL_TEXT");
+                    Utils.CrearParametre(consulta, email, "EMAIL_TEXT", System.Data.DbType.String);
+                }
+
+                if (!string.IsNullOrWhiteSpace(pwd))
+                {
+                    sql.Append(" and PASSWORD = :PWD_TEXT");
+                    Utils.CrearParametre(consulta, pwd, "PWD_TEXT", System.Data.DbType.String);
+                }
+
+                if (bloqueado.HasValue)
+                {
+                    // Cambia VALIDAT por BLOQ si esa es la columna que quieres filtrar en Oracle
+                    sql.Append(" and VALIDAT = :VALIDAT_VAL");
+                    Utils.CrearParametre(consulta, bloqueado.Value ? 1 : 0, "VALIDAT_VAL", System.Data.DbType.Int32);
+                }
+
+                sql.Append(" order by ID");
 
                 if (rows_per_page > 0)
                 {
-                    consulta.CommandText += $" offset {offset} rows fetch next {rows_per_page} rows only";
+                    sql.Append($" offset {offset} rows fetch next {rows_per_page} rows only");
                 }
 
+                consulta.CommandText = sql.ToString();
                 consulta.Transaction = _context.Database.CurrentTransaction?.GetDbTransaction();
-
-                // Creamos los parámetros para email y password (ambos como String)
-                Utils.CrearParametre(consulta, email, "EMAIL_TEXT", System.Data.DbType.String);
-                Utils.CrearParametre(consulta, pwd, "PWD_TEXT", System.Data.DbType.String);
 
                 using (var reader = consulta.ExecuteReader())
                 {
@@ -101,7 +122,10 @@ namespace DAO
         public int GetNumeroUsuariosByUsrPwd(string usr, string pwd)
         {
             var connexio = _context.Database.GetDbConnection();
-            //if (connexio.State == System.Data.ConnectionState.Closed) connexio.Open();
+            if (connexio.State != System.Data.ConnectionState.Open)
+            {
+                connexio.Open();
+            }
 
             using (var consulta = connexio.CreateCommand())
             {
@@ -135,6 +159,7 @@ namespace DAO
                     Utils.CrearParametre(consulta, usr, "EMAIL_TEXT", System.Data.DbType.String);
                     Utils.CrearParametre(consulta, pwd, "PWD_TEXT", System.Data.DbType.String);
                 }
+
 
                 return Convert.ToInt32(consulta.ExecuteScalar());
             }
@@ -171,6 +196,112 @@ namespace DAO
                     transaccio.Rollback();
                     return false;
                 }
+                return true;
+            }
+        }
+
+        public bool UpdateUsuario(
+    // Filtros para el WHERE (pasa al menos uno)
+    int? id = null,
+    string email = null,
+    string nom = null,
+    char? tipo = null,
+    bool? bloqueado = null,
+    // Valores nuevos para el SET (pasa los que quieras modificar)
+    string nuevoEmail = null,
+    string nuevoNom = null,
+    string nuevaPwd = null,
+    char? nuevoTipo = null,
+    DateTime? nuevaFecha = null,
+    bool? nuevoBloq = null)
+        {
+            var connexio = _context.Database.GetDbConnection();
+            if (connexio.State != System.Data.ConnectionState.Open) connexio.Open();
+
+            var transaccio = _context.Database.CurrentTransaction;
+            if (transaccio == null) throw new Exception("NO TRANSACTION");
+
+            using (var consulta = connexio.CreateCommand())
+            {
+                if (consulta is OracleCommand oc) oc.BindByName = true;
+
+                var setClauses = new List<string>();
+                var whereClauses = new List<string>();
+
+                // --- CAMPOS A ACTUALIZAR (SET) ---
+                if (!string.IsNullOrWhiteSpace(nuevoEmail))
+                {
+                    setClauses.Add("EMAIL = :NEW_EMAIL");
+                    Utils.CrearParametre(consulta, nuevoEmail, "NEW_EMAIL", System.Data.DbType.String);
+                }
+                if (!string.IsNullOrWhiteSpace(nuevoNom))
+                {
+                    setClauses.Add("NOM = :NEW_NOM");
+                    Utils.CrearParametre(consulta, nuevoNom, "NEW_NOM", System.Data.DbType.String);
+                }
+                if (!string.IsNullOrWhiteSpace(nuevaPwd))
+                {
+                    setClauses.Add("PASSWORD = :NEW_PWD");
+                    Utils.CrearParametre(consulta, nuevaPwd, "NEW_PWD", System.Data.DbType.String);
+                }
+                if (nuevoTipo.HasValue)
+                {
+                    setClauses.Add("TIPUS = :NEW_TIPUS");
+                    Utils.CrearParametre(consulta, nuevoTipo.Value.ToString(), "NEW_TIPUS", System.Data.DbType.String);
+                }
+                if (nuevaFecha.HasValue)
+                {
+                    setClauses.Add("DATA_REGISTRE = :NEW_FECHA");
+                    Utils.CrearParametre(consulta, nuevaFecha.Value, "NEW_FECHA", System.Data.DbType.Date);
+                }
+                if (nuevoBloq.HasValue)
+                {
+                    setClauses.Add("BLOQ = :NEW_BLOQ");
+                    Utils.CrearParametre(consulta, nuevoBloq.Value ? 1 : 0, "NEW_BLOQ", System.Data.DbType.Int32);
+                }
+
+                // --- FILTROS (WHERE) ---
+                if (id.HasValue)
+                {
+                    whereClauses.Add("ID = :WHERE_ID");
+                    Utils.CrearParametre(consulta, id.Value, "WHERE_ID", System.Data.DbType.Int32);
+                }
+                if (!string.IsNullOrWhiteSpace(email))
+                {
+                    whereClauses.Add("EMAIL = :WHERE_EMAIL");
+                    Utils.CrearParametre(consulta, email, "WHERE_EMAIL", System.Data.DbType.String);
+                }
+                if (!string.IsNullOrWhiteSpace(nom))
+                {
+                    whereClauses.Add("NOM = :WHERE_NOM");
+                    Utils.CrearParametre(consulta, nom, "WHERE_NOM", System.Data.DbType.String);
+                }
+                if (tipo.HasValue)
+                {
+                    whereClauses.Add("TIPUS = :WHERE_TIPUS");
+                    Utils.CrearParametre(consulta, tipo.Value.ToString(), "WHERE_TIPUS", System.Data.DbType.String);
+                }
+                if (bloqueado.HasValue)
+                {
+                    whereClauses.Add("BLOQ = :WHERE_BLOQ");
+                    Utils.CrearParametre(consulta, bloqueado.Value ? 1 : 0, "WHERE_BLOQ", System.Data.DbType.Int32);
+                }
+
+                // Seguridad: evitar UPDATE sin campos o sin WHERE (que machacaría toda la tabla)
+                if (setClauses.Count == 0 || whereClauses.Count == 0)
+                {
+                    return false;
+                }
+
+                consulta.CommandText = $"UPDATE USUARI SET {string.Join(", ", setClauses)} WHERE {string.Join(" AND ", whereClauses)}";
+                consulta.Transaction = transaccio.GetDbTransaction();
+
+                if (consulta.ExecuteNonQuery() < 1)
+                {
+                    transaccio.Rollback();
+                    return false;
+                }
+
                 return true;
             }
         }

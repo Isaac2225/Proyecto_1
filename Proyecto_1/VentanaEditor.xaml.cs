@@ -58,10 +58,14 @@ namespace Proyecto_1
                             txtNombre.Text = "";
                             camposLlenosTrayecto = false;
                         }
+                        else
+                        {
+                            transaccion.Rollback();
+                        }
                     }
                     catch (Exception ex)
                     {
-                        transaccion.Rollback();
+                        try { transaccion.Rollback(); } catch { }
                         MessageBox.Show("Error al eliminar: " + ex.Message);
                     }
                 }

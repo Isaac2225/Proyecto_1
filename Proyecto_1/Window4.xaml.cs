@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAO;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -17,9 +18,22 @@ namespace Proyecto_1
     /// </summary>
     public partial class Window4 : Window
     {
+
+        private readonly MyDBContext _context;
         public Window4()
         {
             InitializeComponent();
+            _context = new MyDBContext();
+            CargaDataGrids();
+        }
+
+        private void CargaDataGrids()
+        {
+            DAOUsuario usuarioDAO = new DAOUsuario(_context);
+            DAOTrayecto trayectoDAO = new DAOTrayecto(_context);
+
+            dtgTrayectos.ItemsSource = trayectoDAO.GetTrayectos();
+            dtgUsuarios.ItemsSource = usuarioDAO.GetUsuarios();
         }
     }
 }
