@@ -5,7 +5,61 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Proyecto_1"
         mc:Ignorable="d"
-        Title="Window3" Height="450" Width="500">
+        Title="Window3" Height="450" Width="500"
+        ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        Background="#F3F5F9" FontFamily="Segoe UI" FontSize="13">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="Primary" Color="#2563EB"/>
+        <SolidColorBrush x:Key="Neutral" Color="#475569"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#D1D5DB"/>
+        <SolidColorBrush x:Key="TextColor" Color="#1F2937"/>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Style.Triggers>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource Primary}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource Primary}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="NeutralButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{StaticResource Neutral}"/>
+        </Style>
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -13,9 +67,14 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Iniciar sesión" FontSize="50" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
+            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE77B;" FontSize="40"
+                       Foreground="{StaticResource Primary}" VerticalAlignment="Center" Margin="0,0,15,0"/>
+            <TextBlock Text="Iniciar sesión" FontSize="38" FontWeight="SemiBold" VerticalAlignment="Center"/>
+        </StackPanel>
 
-        <Border BorderBrush="Black" BorderThickness="2" Margin="10" Grid.Row="1">
+        <Border Grid.Row="1" Margin="30,10" Background="White" CornerRadius="12"
+                BorderBrush="{StaticResource BorderColor}" BorderThickness="1">
             <Grid>
                 <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
@@ -29,17 +88,17 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Email:" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,10,10" FontSize="16"/>
-                    <TextBox x:Name="txtMail" Grid.Row="0" Grid.Column="1" Height="30" Width="200" VerticalContentAlignment="Center" Margin="0,0,0,10"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Email:" FontWeight="SemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,10,10" FontSize="16"/>
+                    <TextBox x:Name="txtMail" Grid.Row="0" Grid.Column="1" Height="32" Width="200" VerticalContentAlignment="Center" Margin="0,0,0,10"/>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Contraseña:" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,10,10" FontSize="16"/>
-                    <TextBox x:Name="txtPwd" Grid.Row="1" Grid.Column="1" Height="30" Width="200" VerticalContentAlignment="Center" Margin="0,0,0,10"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Contraseña:" FontWeight="SemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,10,10" FontSize="16"/>
+                    <TextBox x:Name="txtPwd" Grid.Row="1" Grid.Column="1" Height="32" Width="200" VerticalContentAlignment="Center" Margin="0,0,0,10"/>
 
                     <Grid Grid.Row="2" Grid.ColumnSpan="2" Height="55">
                         <StackPanel VerticalAlignment="Top">
-                            <TextBlock x:Name="txtErrorUsr" Text="El usuario no existe." Foreground="Red" HorizontalAlignment="Center" Visibility="Collapsed"/>
-                            <TextBlock x:Name="txtErrorPwd" Text="Contraseña incorrecta." Foreground="Red" HorizontalAlignment="Center" Visibility="Collapsed"/>
-                            <TextBlock x:Name="txtErrorDB" Text="El correo y la contraseña no coinciden." Foreground="Red" HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="280" Visibility="Collapsed"/>
+                            <TextBlock x:Name="txtErrorUsr" Text="El usuario no existe." Foreground="#DC2626" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                            <TextBlock x:Name="txtErrorPwd" Text="Contraseña incorrecta." Foreground="#DC2626" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                            <TextBlock x:Name="txtErrorDB" Text="El correo y la contraseña no coinciden." Foreground="#DC2626" HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="280" Visibility="Collapsed"/>
                         </StackPanel>
                     </Grid>
                 </Grid>
@@ -47,8 +106,18 @@
         </Border>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Button Content="Iniciar sesión" Height="40" Width="100" Margin="0,0,15,0" Click="Button_Click"/>
-            <Button Content="Registrarse" Height="40" Width="100" Click="Button_Click_1"/>
+            <Button Height="40" Width="150" Margin="0,0,15,0" Click="Button_Click" ToolTip="Iniciar sesión">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE77B;" Foreground="White" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Entrar" Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Style="{StaticResource NeutralButton}" Height="40" Width="150" Click="Button_Click_1" ToolTip="Registrarse">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE8FA;" Foreground="White" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Registrarse" Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

@@ -6,6 +6,7 @@ using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows;
 
 namespace DAO
 {
@@ -298,11 +299,28 @@ namespace DAO
                 Utils.CrearParametre(consulta, idTrayecto, "TRAJECTE_ID", System.Data.DbType.Int32);
                 Utils.CrearParametre(consulta, orden, "ORDRE", System.Data.DbType.Int32);
 
-                if (consulta.ExecuteNonQuery() != 1)
+                try
                 {
-                    transaccio.Rollback();
-                    return false;
+                    if (consulta.ExecuteNonQuery() != 1)
+                    {
+                        transaccio.Rollback();
+                        return false;
+                    }
                 }
+                catch (OracleException ex) when (ex.Number == 20001)
+                {
+                    MessageBox.Show(
+                        "No se puede eliminar la parada porque su estación es origen o destino de un trayecto.",
+                        "Operación no permitida",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al eliminar: " + ex.Message);
+                }
+
+               
                 return true;
             }
         }

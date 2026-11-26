@@ -228,7 +228,6 @@ namespace DAO
                 var setClauses = new List<string>();
                 var whereClauses = new List<string>();
 
-                // --- CAMPOS A ACTUALIZAR (SET) ---
                 if (!string.IsNullOrWhiteSpace(nuevoEmail))
                 {
                     setClauses.Add("EMAIL = :NEW_EMAIL");

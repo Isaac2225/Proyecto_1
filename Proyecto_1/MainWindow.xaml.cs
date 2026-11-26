@@ -195,14 +195,14 @@ namespace Proyecto_1
 
         private void Button_Click_Log(object sender, RoutedEventArgs e)
         {
-            Window3 login = new Window3();
+            Window3 login = new Window3(this);
             login.Show();
             
         }
 
         private void Button_Click_Sign(object sender, RoutedEventArgs e)
         {
-            Window2 signin = new Window2();
+            Window2 signin = new Window2(this);
             signin.Show();
             this.Close();
         }

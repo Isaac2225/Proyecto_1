@@ -20,9 +20,11 @@ namespace Proyecto_1
     /// </summary>
     public partial class Window2 : Window
     {
-        public Window2()
+        private readonly Window _MainWindow;
+        public Window2(Window mainWindow)
         {
             InitializeComponent();
+            _MainWindow = mainWindow;
         }
 
         private readonly MyDBContext _context = new MyDBContext();
@@ -73,7 +75,7 @@ namespace Proyecto_1
                     throw;
                 }
             }
-            
+            _MainWindow.Close();
         }
 
         private bool _sincronizando = false;

@@ -25,9 +25,11 @@ namespace Proyecto_1
     /// </summary>
     public partial class Window3 : Window
     {
-        public Window3()
+        private readonly Window _MainWindow;
+        public Window3(Window mainWindow)
         {
             InitializeComponent();
+            _MainWindow = mainWindow;
         }
 
         private readonly MyDBContext _context = new MyDBContext();
@@ -55,16 +57,14 @@ namespace Proyecto_1
                         break;
                 }
 
-                //Implementar para las otras ventanas.
-                MainWindow main = new MainWindow();
-                main.Close();
+                _MainWindow.Close();
             }
 
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            Window2 window = new Window2();
+            Window2 window = new Window2(this);
             window.Show();
             this.Close();
         }

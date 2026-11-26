@@ -390,5 +390,12 @@ namespace Proyecto_1
             txtHoraSalida.Text = "";
             camposLlenosParada = false;
         }
+
+        private void Button_Click_LogOut(object sender, RoutedEventArgs e)
+        {
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Show();
+            this.Close();
+        }
     }
 }
