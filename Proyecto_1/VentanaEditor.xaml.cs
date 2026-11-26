@@ -397,5 +397,11 @@ namespace Proyecto_1
             mainWindow.Show();
             this.Close();
         }
+
+        private void Button_Click_CambiarUsuario(object sender, RoutedEventArgs e)
+        {
+            Window3 login = new Window3(this);
+            login.Show();
+        }
     }
 }

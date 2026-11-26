@@ -34,7 +34,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 
-                <Button Content="Bloquear" Grid.Column="0" Margin="10"/>
+                <Button Content="Bloquear" Grid.Column="0" Margin="10" Click="Button_Click_Bloquear"/>
                 <Button Content="Desbloquear" Grid.Column="2" Margin="10"/>
             </Grid>
         </Grid>

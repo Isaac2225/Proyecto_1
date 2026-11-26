@@ -9,6 +9,7 @@ namespace Modelo
         private string password;
         private char tipo;
         private DateTime fechaRegistro;
+        private bool bloqueado;
 
         public Usuario(int id, string email, string nombre, string password, char tipo, DateTime fechaRegistro)
         {
@@ -18,6 +19,7 @@ namespace Modelo
             Password = password;
             Tipo = tipo;
             FechaRegistro = fechaRegistro;
+            bloqueado = false;
         }
 
         public int Id { get => id; set => id = value; }
@@ -26,6 +28,7 @@ namespace Modelo
         public string Password { get => password; set => password = value; }
         public char Tipo { get => tipo; set => tipo = value; }
         public DateTime FechaRegistro { get => fechaRegistro; set => fechaRegistro = value; }
+        public bool Bloqueado { get => bloqueado; set => bloqueado = value; }
     }
 
 }

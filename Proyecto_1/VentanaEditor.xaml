@@ -9,7 +9,6 @@
         WindowState="Maximized" Background="#F3F5F9" FontFamily="Segoe UI" FontSize="13">
 
     <Window.Resources>
-        <!-- Colores -->
         <SolidColorBrush x:Key="Primary" Color="#2563EB"/>
         <SolidColorBrush x:Key="Danger" Color="#DC2626"/>
         <SolidColorBrush x:Key="Neutral" Color="#475569"/>
@@ -20,7 +19,6 @@
             <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
         </Style>
 
-        <!-- Botones de icono (estilo base: azul) -->
         <Style TargetType="Button">
             <Setter Property="Background" Value="{StaticResource Primary}"/>
             <Setter Property="Foreground" Value="White"/>
@@ -55,7 +53,6 @@
             <Setter Property="Background" Value="{StaticResource Neutral}"/>
         </Style>
 
-        <!-- Paneles -->
         <Style x:Key="Panel" TargetType="Border">
             <Setter Property="Background" Value="White"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
@@ -81,7 +78,6 @@
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
         </Style>
 
-        <!-- DataGrid -->
         <Style TargetType="DataGrid">
             <Setter Property="Background" Value="White"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
@@ -120,10 +116,14 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Barra superior -->
         <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource BorderColor}" BorderThickness="0,0,0,1">
-            <Button Content="&#xE7E8;" Style="{StaticResource NeutralButton}" ToolTip="Cerrar sesión"
-                    Margin="10" HorizontalAlignment="Right" VerticalAlignment="Center" Click="Button_Click_LogOut"/>
+            <StackPanel Orientation="Horizontal">
+                <Button Content="&#xE7E8;" Style="{StaticResource NeutralButton}" ToolTip="Cerrar sesión"
+        Margin="10" HorizontalAlignment="Right" VerticalAlignment="Center" Click="Button_Click_LogOut"/>
+
+                <Button Content="&#xE748;" Style="{StaticResource NeutralButton}" ToolTip="Cambiar usuario"
+        Margin="10" HorizontalAlignment="Right" VerticalAlignment="Center" Click="Button_Click_CambiarUsuario"/>
+            </StackPanel>
         </Border>
 
         <Grid Grid.Row="1">
@@ -132,7 +132,6 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Columna izquierda -->
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -203,14 +202,12 @@
                         Click="Button_Click_Eliminar_Trayectos"/>
             </Grid>
 
-            <!-- Columna derecha -->
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Formulario de paradas -->
                 <Border Grid.Row="0" Style="{StaticResource Panel}" Margin="15,15,15,5">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -249,7 +246,6 @@
                     </Grid>
                 </Border>
 
-                <!-- Formulario de trayectos -->
                 <Border Grid.Row="1" Style="{StaticResource Panel}" Margin="15,5,15,15">
                     <Grid>
                         <Grid.RowDefinitions>
