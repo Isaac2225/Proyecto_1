@@ -285,15 +285,12 @@ namespace DAO
 
             return resultat;
         }
-
-        // Método auxiliar para no repetir el mapeo
         private Trayecto LeerTrayecto(DbDataReader reader)
         {
             int id = Convert.ToInt32(reader["id"]);
             string nom = reader.GetString(reader.GetOrdinal("nom"));
             DateTime data = reader.GetDateTime(reader.GetOrdinal("datacreacio"));
 
-            // Usuario (puede ser NULL)
             Usuario usuario = null;
             int ordUsu = reader.GetOrdinal("usuari_id");
             if (!reader.IsDBNull(ordUsu))
@@ -316,6 +313,7 @@ namespace DAO
             {
                 medio = new MedioTransporte(
                     reader.GetString(reader.GetOrdinal("m_nom")));
+                medio.Id = Convert.ToInt32(reader[ordMitja]);
             }
 
             var trayecto = new Trayecto(nom, data, medio);
@@ -324,7 +322,6 @@ namespace DAO
             int ordValidat = reader.GetOrdinal("validat");
             trayecto.Validado = !reader.IsDBNull(ordValidat) && Convert.ToInt32(reader[ordValidat]) == 1;
 
-            // Origen y destino (se asignan por propiedad)
             trayecto.Origen = new Estacion(
                 Convert.ToInt32(reader["estacio_origen_id"]),
                 reader.GetString(reader.GetOrdinal("nom_origen")),

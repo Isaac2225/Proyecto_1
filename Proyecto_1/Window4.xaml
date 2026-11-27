@@ -206,7 +206,7 @@
 
                     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button Content="Bloquear" Style="{StaticResource DangerButton}" Margin="0,0,10,0" Click="Button_Click_Bloquear"/>
-                        <Button Content="Desbloquear" Style="{StaticResource SecondaryButton}"/>
+                        <Button Content="Desbloquear" Style="{StaticResource SecondaryButton}" Click="Button_Click_Desbloquear"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -223,10 +223,25 @@
 
                     <TextBlock Grid.Row="0" Text="Trayectos" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,14"/>
 
-                    <DataGrid x:Name="dtgTrayectos" Grid.Row="1" Margin="0,0,0,16"/>
+                    <DataGrid x:Name="dtgTrayectos"
+          Grid.Row="1"
+          Margin="0,0,0,16"
+          AutoGenerateColumns="False"
+          IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
+                            <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" />
+                            <DataGridTextColumn Header="FechaCreacion" Binding="{Binding FechaCreacion, StringFormat=dd/MM/yyyy HH:mm}" />
+                            <DataGridCheckBoxColumn Header="Validado" Binding="{Binding Validado}" />
+                            <DataGridTextColumn Header="Id Medio" Binding="{Binding Medio.Id}" />
+                            <DataGridTextColumn Header="Id Origen" Binding="{Binding Origen.Id}" />
+                            <DataGridTextColumn Header="Id Destino" Binding="{Binding Destino.Id}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
 
                     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Content="Validar" Style="{StaticResource SuccessButton}"/>
+                        <Button Content="Visible" Style="{StaticResource SuccessButton}" Click="Button_Click_Validar" Margin="10"/>
+                        <Button Content=" No Visible" Style="{StaticResource SuccessButton}" Click="Button_Click_DesValidar" Margin="10"/>
                     </StackPanel>
                 </Grid>
             </Border>

@@ -20,18 +20,17 @@ namespace DAO
 
         public Usuario GetUsuario(string email, string pwd)
         {
-            // Llamamos a GetUsuarios pasándole el email y la contraseña
             ObservableCollection<Usuario> usuarios = GetUsuarios(email, pwd);
             if (usuarios.Count == 0) return null;
             return usuarios[0];
         }
 
         public ObservableCollection<Usuario> GetUsuarios(
-    string email = null,
-    string pwd = null,
-    bool? bloqueado = null,
-    int offset = 0,
-    int rows_per_page = -1)
+            string email = null,
+            string pwd = null,
+            bool? bloqueado = null,
+            int offset = 0,
+            int rows_per_page = -1)
         {
             ObservableCollection<Usuario> resultat = new ObservableCollection<Usuario>();
 
@@ -42,7 +41,7 @@ namespace DAO
             {
                 if (consulta is OracleCommand oc) oc.BindByName = true;
 
-                var sql = new StringBuilder(@"select ID, EMAIL, NOM, PASSWORD, TIPUS, DATA_REGISTRE
+                var sql = new StringBuilder(@"select ID, EMAIL, NOM, PASSWORD, TIPUS, DATA_REGISTRE, BLOQ
                                         from usuari
                                        where 1 = 1");
 
@@ -60,9 +59,8 @@ namespace DAO
 
                 if (bloqueado.HasValue)
                 {
-                    // Cambia VALIDAT por BLOQ si esa es la columna que quieres filtrar en Oracle
-                    sql.Append(" and VALIDAT = :VALIDAT_VAL");
-                    Utils.CrearParametre(consulta, bloqueado.Value ? 1 : 0, "VALIDAT_VAL", System.Data.DbType.Int32);
+                    sql.Append(" and BLOQ = :BLOQ_VAL");
+                    Utils.CrearParametre(consulta, bloqueado.Value ? 1 : 0, "BLOQ_VAL", System.Data.DbType.Int32);
                 }
 
                 sql.Append(" order by ID");
@@ -85,8 +83,9 @@ namespace DAO
                         string readerPassword = reader.GetString(reader.GetOrdinal("PASSWORD"));
                         char tipo = reader.GetString(reader.GetOrdinal("TIPUS"))[0];
                         DateTime fecha = reader.GetDateTime(reader.GetOrdinal("DATA_REGISTRE"));
+                        bool readerBloqueado = !reader.IsDBNull(reader.GetOrdinal("BLOQ")) && Convert.ToInt32(reader["BLOQ"]) == 1;
 
-                        resultat.Add(new Usuario(id, readerEmail, nom, readerPassword, tipo, fecha));
+                        resultat.Add(new Usuario(id, readerEmail, nom, readerPassword, tipo, fecha, readerBloqueado));
                     }
                 }
             }
@@ -159,7 +158,6 @@ namespace DAO
                     Utils.CrearParametre(consulta, usr, "EMAIL_TEXT", System.Data.DbType.String);
                     Utils.CrearParametre(consulta, pwd, "PWD_TEXT", System.Data.DbType.String);
                 }
-
 
                 return Convert.ToInt32(consulta.ExecuteScalar());
             }

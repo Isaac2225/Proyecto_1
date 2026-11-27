@@ -68,9 +68,16 @@ namespace Proyecto_1
                         this.Close();
                         break;
                     case 'E':
-                        VentanaEditor ventanaEscojer = new VentanaEditor();
-                        ventanaEscojer.Show();
-                        this.Close();
+                        if(usuario.Bloqueado)
+                        {
+                            MessageBox.Show("Este usuario está bloqueado.");
+                            return;
+                        } else
+                        {
+                            VentanaEditor ventanaEscojer = new VentanaEditor();
+                            ventanaEscojer.Show();
+                            this.Close();
+                        }
                         break;
                 }
 

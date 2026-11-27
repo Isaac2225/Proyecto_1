@@ -89,5 +89,86 @@ namespace Proyecto_1
             mainWindow.Show();
             this.Close();
         }
+
+        private void Button_Click_Desbloquear(object sender, RoutedEventArgs e)
+        {
+            if (dtgUsuarios.SelectedItem is not Usuario usuarioSeleccionado)
+            {
+                MessageBox.Show("Selecciona un usuario primero.");
+                return;
+            }
+
+            if (!usuarioSeleccionado.Bloqueado)
+            {
+                MessageBox.Show("Este usuario ya está desbloqueado.");
+                return;
+            }
+
+            try
+            {
+                usuarioSeleccionado.Bloqueado = false;
+                DAOUsuario daoUsuario = new DAOUsuario(_context);
+
+                using (var transaccio = _context.Database.BeginTransaction())
+                {
+                    if (daoUsuario.UpdateUsuario(usuarioSeleccionado))
+                    {
+                        transaccio.Commit();
+                        dtgUsuarios.Items.Refresh();
+                    }
+                    else
+                    {
+                        usuarioSeleccionado.Bloqueado = false;
+                        MessageBox.Show("No se pudo desbloquear el usuario.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                usuarioSeleccionado.Bloqueado = false;
+                MessageBox.Show("Error al desbloquear: " + ex.Message);
+            }
+        }
+
+        private void Button_Click_Validar(object sender, RoutedEventArgs e)
+        {
+            if (dtgTrayectos.SelectedItem is not Trayecto trayectoSeleccionado)
+            {
+                MessageBox.Show("Selecciona un trayecto primero.");
+                return;
+            }
+
+            if(trayectoSeleccionado.Validado)
+            {
+                MessageBox.Show("Este trayecto ya está validado.");
+                return;
+            }
+
+            try
+            {
+                trayectoSeleccionado.Validado = true;
+                DAOTrayecto daoTrayecto = new DAOTrayecto(_context);
+
+                using (var transaction = _context.Database.BeginTransaction())
+                {
+                    if (daoTrayecto.UpdateTrayecto(trayectoSeleccionado))
+                    {
+                        transaction.Commit();
+                        dtgTrayectos.Items.Refresh();
+                        MessageBox.Show($"Trayecto {trayectoSeleccionado.Nombre} validado correctamente.");
+                    }
+                    else
+                    {
+                        trayectoSeleccionado.Validado = false;
+                        MessageBox.Show("No se pudo validar el trayecto.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                trayectoSeleccionado.Validado = false;
+                MessageBox.Show("Error al validar: " + ex.Message);
+            }
+        }
     }
 }
