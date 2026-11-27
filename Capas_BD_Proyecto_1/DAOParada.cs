@@ -214,7 +214,7 @@ namespace DAO
 
                 consulta.Transaction = transaccio.GetDbTransaction();
 
-                Utils.CrearParametre(consulta, p.Id_trayecto.Id, "TRAJECTE_ID", System.Data.DbType.Int32);
+                Utils.CrearParametre(consulta, (object)p.Id_trayecto?.Id ?? DBNull.Value, "TRAJECTE_ID", System.Data.DbType.Int32);
                 Utils.CrearParametre(consulta, p.IdEstacion, "ESTACIO_ID", System.Data.DbType.Int32);
                 Utils.CrearParametre(consulta, (object)p.HoraLlegada ?? DBNull.Value, "HORA_ARRIBADA", System.Data.DbType.DateTime);
                 Utils.CrearParametre(consulta, (object)p.HoraSalida ?? DBNull.Value, "HORA_SORTIDA", System.Data.DbType.DateTime);
@@ -279,49 +279,30 @@ namespace DAO
             }
         }
 
-        public bool DeleteParada(int idTrayecto, int orden)
+
+        public bool DeleteParada(int? idTrayecto, int orden)
         {
-            var connexio = _context.Database.GetDbConnection();
-            if (connexio.State == System.Data.ConnectionState.Closed) connexio.Open();
-
-            var transaccio = _context.Database.CurrentTransaction;
-            if (transaccio == null) throw new Exception("NO TRANSACTION");
-
-            using (var consulta = connexio.CreateCommand())
+            using (var consulta = _context.Database.GetDbConnection().CreateCommand())
             {
-                if (consulta is OracleCommand oc) oc.BindByName = true;
+                if (idTrayecto.HasValue)
+                {
+                    consulta.CommandText = "DELETE FROM PARADA WHERE TRAJECTE_ID = :TRAJECTE_ID AND ORDRE = :ORDRE";
+                    Utils.CrearParametre(consulta, idTrayecto.Value, "TRAJECTE_ID", System.Data.DbType.Int32);
+                }
+                else
+                {
+                    consulta.CommandText = "DELETE FROM PARADA WHERE TRAJECTE_ID IS NULL AND ORDRE = :ORDRE";
+                }
 
-                consulta.CommandText = @"delete from parada
-                                  where trajecte_id = :TRAJECTE_ID
-                                    and ordre = :ORDRE";
-                consulta.Transaction = transaccio.GetDbTransaction();
-
-                Utils.CrearParametre(consulta, idTrayecto, "TRAJECTE_ID", System.Data.DbType.Int32);
                 Utils.CrearParametre(consulta, orden, "ORDRE", System.Data.DbType.Int32);
 
-                try
-                {
-                    if (consulta.ExecuteNonQuery() != 1)
-                    {
-                        transaccio.Rollback();
-                        return false;
-                    }
-                }
-                catch (OracleException ex) when (ex.Number == 20001)
-                {
-                    MessageBox.Show(
-                        "No se puede eliminar la parada porque su estación es origen o destino de un trayecto.",
-                        "Operación no permitida",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error al eliminar: " + ex.Message);
-                }
+                if (consulta.Connection.State != System.Data.ConnectionState.Open)
+                    consulta.Connection.Open();
 
-               
-                return true;
+                if (_context.Database.CurrentTransaction != null)
+                    consulta.Transaction = _context.Database.CurrentTransaction.GetDbTransaction();
+
+                return consulta.ExecuteNonQuery() > 0;
             }
         }
     }

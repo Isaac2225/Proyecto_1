@@ -15,6 +15,6 @@ namespace IDAO
         int GetNumeroParadas(string idTrayectoFiltro, string nombreFiltro);
         bool InsertParada(Parada p);
         bool UpdateParada(Parada p);
-        bool DeleteParada(int idTrayecto, int orden);
+        bool DeleteParada(int? idTrayecto, int orden);
     }
 }

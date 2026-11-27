@@ -1,8 +1,4 @@
-﻿
-
-
-
-using DAO;
+﻿using DAO;
 using Modelo;
 using System;
 using System.Collections.Generic;
@@ -20,28 +16,49 @@ using System.Windows.Shapes;
 
 namespace Proyecto_1
 {
-    /// <summary>
-    /// Lógica de interacción para Window3.xaml
-    /// </summary>
     public partial class Window3 : Window
     {
         private readonly Window _MainWindow;
+        private readonly MyDBContext _context = new MyDBContext();
+        private bool _sincronizandoPwd = false;
+
         public Window3(Window mainWindow)
         {
             InitializeComponent();
             _MainWindow = mainWindow;
         }
 
-        private readonly MyDBContext _context = new MyDBContext();
+        private void TxtPwd_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (_sincronizandoPwd) return;
+            _sincronizandoPwd = true;
+            txtPwdVisible.Text = txtPwd.Password;
+            _sincronizandoPwd = false;
+        }
+
+        private void TxtPwdVisible_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_sincronizandoPwd) return;
+            _sincronizandoPwd = true;
+            txtPwd.Password = txtPwdVisible.Text;
+            _sincronizandoPwd = false;
+        }
+
+        private void BtnVerPwd_Changed(object sender, RoutedEventArgs e)
+        {
+            bool mostrar = btnVerPwd.IsChecked == true;
+            txtPwd.Visibility = mostrar ? Visibility.Collapsed : Visibility.Visible;
+            txtPwdVisible.Visibility = mostrar ? Visibility.Visible : Visibility.Collapsed;
+        }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            bool datosCorrectos = VerificarUsuario(txtMail.Text, txtPwd.Text);
+            bool datosCorrectos = VerificarUsuario(txtMail.Text, txtPwd.Password);
 
             if (datosCorrectos)
             {
                 DAOUsuario usuarioDAO = new DAOUsuario(_context);
-                Usuario usuario = usuarioDAO.GetUsuario(txtMail.Text, txtPwd.Text);
+                Usuario usuario = usuarioDAO.GetUsuario(txtMail.Text, txtPwd.Password);
 
                 switch (usuario.Tipo)
                 {
@@ -59,7 +76,6 @@ namespace Proyecto_1
 
                 _MainWindow.Close();
             }
-
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -115,7 +131,3 @@ namespace Proyecto_1
         }
     }
 }
-
-
-
-

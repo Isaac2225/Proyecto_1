@@ -14,14 +14,12 @@ using System.Windows.Shapes;
 
 namespace Proyecto_1
 {
-    /// <summary>
-    /// Lógica de interacción para VentanaEditorEscojer.xaml
-    /// </summary>
     public partial class VentanaEditor : Window
     {
         private bool camposLlenosTrayecto = false;
         private bool camposLlenosParada = false;
         private readonly MyDBContext _context;
+
         public VentanaEditor()
         {
             InitializeComponent();
@@ -40,7 +38,10 @@ namespace Proyecto_1
 
         private void Button_Click_Eliminar_Trayectos(object sender, RoutedEventArgs e)
         {
-            if (dtgTrayectos.SelectedItem is Trayecto selectedTrayecto)
+            Trayecto selectedTrayecto = (sender as FrameworkElement)?.DataContext as Trayecto
+                ?? dtgTrayectos.SelectedItem as Trayecto;
+
+            if (selectedTrayecto != null)
             {
                 using (var transaccion = _context.Database.BeginTransaction())
                 {
@@ -87,7 +88,7 @@ namespace Proyecto_1
             camposLlenosTrayecto = true;
         }
 
-        private void LlenarCboMedios()  
+        private void LlenarCboMedios()
         {
             cboMedioTransporte.Items.Add("Autobús");
             cboMedioTransporte.Items.Add("Tren");
@@ -134,7 +135,7 @@ namespace Proyecto_1
                     nuevoTrayecto.Origen = origen;
                     nuevoTrayecto.Destino = destino;
 
-                    if(!camposLlenosTrayecto)
+                    if (!camposLlenosTrayecto)
                     {
                         if (trayectoDAO.InsertTrayecto(nuevoTrayecto))
                         {
@@ -142,7 +143,8 @@ namespace Proyecto_1
                             dtgTrayectos.ItemsSource = trayectoDAO.GetTrayectos();
                             MessageBox.Show("Trayecto insertado correctamente.");
                         }
-                    } else
+                    }
+                    else
                     {
                         MessageBox.Show("No se puede insertar un nuevo trayecto porque has seleccionado un trayecto previamente.");
                         transaccio.Rollback();
@@ -189,11 +191,9 @@ namespace Proyecto_1
                     nuevoTrayecto.Origen = origen;
                     nuevoTrayecto.Destino = destino;
 
-                    Trayecto trayectoAux = null;
+                    Trayecto trayectoAux = trayectoDAO.GetTrayecto(txtNombre.Text);
 
-                    trayectoAux = trayectoDAO.GetTrayecto(txtNombre.Text);
-
-                    if(camposLlenosTrayecto)
+                    if (camposLlenosTrayecto)
                     {
                         if (trayectoAux != null)
                         {
@@ -209,7 +209,8 @@ namespace Proyecto_1
                         {
                             MessageBox.Show("No se encontró un trayecto con ese nombre para actualizar.");
                         }
-                    } else
+                    }
+                    else
                     {
                         MessageBox.Show("No se puede modificar un trayecto porque no has seleccionado uno previamente.");
                         transaccio.Rollback();
@@ -230,19 +231,23 @@ namespace Proyecto_1
                 txtHoraLlegada.Text = selectedParada.HoraLlegada?.ToString("HH:mm") ?? "";
                 txtHoraSalida.Text = selectedParada.HoraSalida?.ToString("HH:mm") ?? "";
             }
+
             camposLlenosParada = true;
         }
 
         private void Button_Click_Eliminar_Paradas(object sender, RoutedEventArgs e)
         {
-            if (dtgParadas.SelectedItem is Parada selectedParada)
+            Parada selectedParada = (sender as FrameworkElement)?.DataContext as Parada
+                ?? dtgParadas.SelectedItem as Parada;
+
+            if (selectedParada != null)
             {
                 using (var transaccion = _context.Database.BeginTransaction())
                 {
                     try
                     {
                         DAOParada paradaDAO = new DAOParada(_context);
-                        bool eliminado = paradaDAO.DeleteParada(selectedParada.Id_trayecto.Id, selectedParada.Orden);
+                        bool eliminado = paradaDAO.DeleteParada(selectedParada.Id_trayecto?.Id, selectedParada.Orden);
 
                         if (eliminado)
                         {
@@ -251,6 +256,11 @@ namespace Proyecto_1
                             txtHoraLlegada.Text = "";
                             txtHoraSalida.Text = "";
                             camposLlenosParada = false;
+                        }
+                        else
+                        {
+                            transaccion.Rollback();
+                            MessageBox.Show("No se encontró la parada en la base de datos para eliminar.");
                         }
                     }
                     catch (Exception ex)
@@ -274,9 +284,8 @@ namespace Proyecto_1
                 return;
             }
 
-            if (dtgTrayectos.SelectedItem is not Trayecto trayectoSeleccionado)
+            if (!PedirDatosParada(out Trayecto trayectoElegido, out string nombreParada, out string nombreEstacion))
             {
-                MessageBox.Show("Selecciona primero un trayecto en la tabla de trayectos.");
                 return;
             }
 
@@ -284,6 +293,16 @@ namespace Proyecto_1
             {
                 try
                 {
+                    DAOEstacion estacionDAO = new DAOEstacion(_context);
+                    Estacion estacion = estacionDAO.GetEstacion(nombreEstacion);
+
+                    if (estacion == null)
+                    {
+                        MessageBox.Show($"La estación \"{nombreEstacion}\" no existe en la base de datos.");
+                        transaccio.Rollback();
+                        return;
+                    }
+
                     DateTime? horaLlegada = string.IsNullOrWhiteSpace(txtHoraLlegada.Text)
                         ? null
                         : DateTime.ParseExact(txtHoraLlegada.Text.Trim(), "HH:mm", null);
@@ -300,17 +319,18 @@ namespace Proyecto_1
                     }
 
                     DAOParada paradaDAO = new DAOParada(_context);
-
-
-                    int idEstacion = trayectoSeleccionado.Origen.Id;
-
-                    Parada nuevaParada = new Parada(trayectoSeleccionado, idEstacion, 0, "", horaLlegada, horaSalida);
+                    Parada nuevaParada = new Parada(trayectoElegido, estacion.Id, 0, nombreParada, horaLlegada, horaSalida);
 
                     if (paradaDAO.InsertParada(nuevaParada))
                     {
                         transaccio.Commit();
                         dtgParadas.ItemsSource = paradaDAO.GetParadas();
                         MessageBox.Show("Parada insertada correctamente.");
+                    }
+                    else
+                    {
+                        transaccio.Rollback();
+                        MessageBox.Show("No se pudo insertar la parada.");
                     }
                 }
                 catch (Exception ex)
@@ -319,6 +339,123 @@ namespace Proyecto_1
                     MessageBox.Show("Error al insertar: " + ex.Message);
                 }
             }
+        }
+
+        private bool PedirDatosParada(out Trayecto trayectoElegido, out string nombreParada, out string nombreEstacion)
+        {
+            trayectoElegido = null;
+            nombreParada = "";
+            nombreEstacion = "";
+
+            DAOTrayecto trayectoDAO = new DAOTrayecto(_context);
+            var trayectos = trayectoDAO.GetTrayectos();
+
+            Window dialogo = new Window
+            {
+                Title = "Nueva parada",
+                Width = 360,
+                Height = 290,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Owner = this,
+                ResizeMode = ResizeMode.NoResize,
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E2126")),
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E5E7EB")),
+                FontFamily = new FontFamily("Segoe UI"),
+                FontSize = 13
+            };
+
+            var inputBg = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#262A30"));
+            var borderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#323741"));
+            var textBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E5E7EB"));
+
+            StackPanel panel = new StackPanel { Margin = new Thickness(18) };
+
+            panel.Children.Add(new TextBlock { Text = "Trayecto (opcional):", Margin = new Thickness(0, 0, 0, 4), Foreground = textBrush });
+            ComboBox cboTrayecto = new ComboBox
+            {
+                Height = 30,
+                Margin = new Thickness(0, 0, 0, 12),
+                ItemsSource = trayectos,
+                DisplayMemberPath = "Nombre"
+            };
+            panel.Children.Add(cboTrayecto);
+
+            panel.Children.Add(new TextBlock { Text = "Nombre de la parada:", Margin = new Thickness(0, 0, 0, 4), Foreground = textBrush });
+            TextBox txtNomParada = new TextBox
+            {
+                Height = 30,
+                Margin = new Thickness(0, 0, 0, 12),
+                Padding = new Thickness(6, 4, 6, 4),
+                Background = inputBg,
+                Foreground = textBrush,
+                CaretBrush = textBrush,
+                BorderBrush = borderBrush
+            };
+            panel.Children.Add(txtNomParada);
+
+            panel.Children.Add(new TextBlock { Text = "Nombre de la estación:", Margin = new Thickness(0, 0, 0, 4), Foreground = textBrush });
+            TextBox txtNomEstacion = new TextBox
+            {
+                Height = 30,
+                Margin = new Thickness(0, 0, 0, 16),
+                Padding = new Thickness(6, 4, 6, 4),
+                Background = inputBg,
+                Foreground = textBrush,
+                CaretBrush = textBrush,
+                BorderBrush = borderBrush
+            };
+            panel.Children.Add(txtNomEstacion);
+
+            StackPanel botones = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
+
+            Button btnCancelar = new Button
+            {
+                Content = "Cancelar",
+                Width = 85,
+                Height = 30,
+                Margin = new Thickness(0, 0, 8, 0),
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#374151")),
+                Foreground = Brushes.White,
+                BorderThickness = new Thickness(0),
+                IsCancel = true
+            };
+
+            Button btnAceptar = new Button
+            {
+                Content = "Aceptar",
+                Width = 85,
+                Height = 30,
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3B82F6")),
+                Foreground = Brushes.White,
+                BorderThickness = new Thickness(0),
+                IsDefault = true
+            };
+
+            btnAceptar.Click += (s, args) =>
+            {
+                if (string.IsNullOrWhiteSpace(txtNomParada.Text) || string.IsNullOrWhiteSpace(txtNomEstacion.Text))
+                {
+                    MessageBox.Show("Rellena el nombre de la parada y el de la estación.");
+                    return;
+                }
+                dialogo.DialogResult = true;
+            };
+
+            botones.Children.Add(btnCancelar);
+            botones.Children.Add(btnAceptar);
+            panel.Children.Add(botones);
+
+            dialogo.Content = panel;
+
+            if (dialogo.ShowDialog() == true)
+            {
+                trayectoElegido = cboTrayecto.SelectedItem as Trayecto;
+                nombreParada = txtNomParada.Text.Trim();
+                nombreEstacion = txtNomEstacion.Text.Trim();
+                return true;
+            }
+
+            return false;
         }
 
         private void Button_Click_Modificar_Paradas(object sender, RoutedEventArgs e)
@@ -377,7 +514,7 @@ namespace Proyecto_1
         {
             txtHoraLlegada.Text = "";
             txtHoraSalida.Text = "";
-            camposLlenosTrayecto = false;
+            camposLlenosParada = false;
         }
 
         private void Button_Click_Limpiar_Campos_Trayecto(object sender, RoutedEventArgs e)
@@ -386,9 +523,7 @@ namespace Proyecto_1
             txtOrigen.Text = "";
             txtDestino.Text = "";
             cboMedioTransporte.SelectedItem = null;
-            txtHoraLlegada.Text = "";
-            txtHoraSalida.Text = "";
-            camposLlenosParada = false;
+            camposLlenosTrayecto = false;
         }
 
         private void Button_Click_LogOut(object sender, RoutedEventArgs e)

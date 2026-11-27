@@ -5,62 +5,231 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Proyecto_1"
         mc:Ignorable="d"
-        Title="Window4" Height="450" Width="800"
-        WindowState="Maximized">
+        Title="Panel de Administración" Height="600" Width="1000"
+        WindowState="Maximized" Background="#121417" FontFamily="Segoe UI" FontSize="13">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="Primary" Color="#3B82F6"/>
+        <SolidColorBrush x:Key="PrimaryHover" Color="#2563EB"/>
+        <SolidColorBrush x:Key="PrimaryPressed" Color="#1D4ED8"/>
+        <SolidColorBrush x:Key="Secondary" Color="#2D333B"/>
+        <SolidColorBrush x:Key="SecondaryHover" Color="#373E47"/>
+        <SolidColorBrush x:Key="Danger" Color="#DC2626"/>
+        <SolidColorBrush x:Key="DangerHover" Color="#B91C1C"/>
+        <SolidColorBrush x:Key="Success" Color="#16A34A"/>
+        <SolidColorBrush x:Key="SuccessHover" Color="#15803D"/>
+        <SolidColorBrush x:Key="PanelBackground" Color="#1E2126"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#323741"/>
+        <SolidColorBrush x:Key="TextColor" Color="#E5E7EB"/>
+        <SolidColorBrush x:Key="MutedText" Color="#9CA3AF"/>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource Primary}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{StaticResource PrimaryHover}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{StaticResource PrimaryPressed}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{StaticResource Secondary}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="6"
+                                BorderBrush="{StaticResource BorderColor}" BorderThickness="1"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{StaticResource SecondaryHover}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{StaticResource Danger}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{StaticResource DangerHover}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{StaticResource Success}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{StaticResource SuccessHover}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="{StaticResource PanelBackground}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="RowBackground" Value="#1E2126"/>
+            <Setter Property="AlternatingRowBackground" Value="#252930"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#2F343D"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="RowHeight" Value="36"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="SelectionUnit" Value="FullRow"/>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#111317"/>
+            <Setter Property="Foreground" Value="#F9FAFB"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style TargetType="DataGridCell">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="8,0"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#1E3A8A"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-
-        <Grid Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
-
-            <Border BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0">
-                <StackPanel Margin="20">
-                    <TextBlock Text="Usuarios" FontSize="20" Margin="10"/>
-                    <DataGrid x:Name="dtgUsuarios" Height="200" Width="300"/>
+        <!-- Barra superior -->
+        <Border Grid.Row="0" Background="#1A1D21" BorderBrush="{StaticResource BorderColor}" BorderThickness="0,0,0,1" Padding="24,12">
+            <DockPanel LastChildFill="False">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE7EF;" FontSize="20"
+                               Foreground="{StaticResource Primary}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock Text="Panel de Administración" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </StackPanel>
+
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
+                    <Button Style="{StaticResource SecondaryButton}" Width="42" Height="32" Padding="0" Margin="0,0,8,0"
+                            ToolTip="Cambiar usuario" Click="Button_Click_CambiarUsuario">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE748;" FontSize="15"
+                                   Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+
+                    <Button Style="{StaticResource DangerButton}" Width="42" Height="32" Padding="0"
+                            ToolTip="Cerrar sesión" Click="Button_Click_LogOut">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE7E8;" FontSize="15"
+                                   Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Contenido principal: 2 columnas -->
+        <Grid Grid.Row="1" Margin="24,20,24,24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Tarjeta Usuarios -->
+            <Border Grid.Column="0" Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource BorderColor}"
+                    BorderThickness="1" CornerRadius="10" Padding="20">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="Usuarios" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,14"/>
+
+                    <DataGrid x:Name="dtgUsuarios" Grid.Row="1" Margin="0,0,0,16"/>
+
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Bloquear" Style="{StaticResource DangerButton}" Margin="0,0,10,0" Click="Button_Click_Bloquear"/>
+                        <Button Content="Desbloquear" Style="{StaticResource SecondaryButton}"/>
+                    </StackPanel>
+                </Grid>
             </Border>
 
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                
-                <Button Content="Bloquear" Grid.Column="0" Margin="10" Click="Button_Click_Bloquear"/>
-                <Button Content="Desbloquear" Grid.Column="2" Margin="10"/>
-            </Grid>
-        </Grid>
+            <!-- Tarjeta Trayectos -->
+            <Border Grid.Column="2" Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource BorderColor}"
+                    BorderThickness="1" CornerRadius="10" Padding="20">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Trayectos" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,14"/>
 
-            <Border BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0">
-                <StackPanel Margin="20">
-                    <TextBlock Text="Trayectos" FontSize="20" Margin="10"/>
-                    <DataGrid x:Name="dtgTrayectos" Height="200" Width="300"/>
-                </StackPanel>
+                    <DataGrid x:Name="dtgTrayectos" Grid.Row="1" Margin="0,0,0,16"/>
+
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Validar" Style="{StaticResource SuccessButton}"/>
+                    </StackPanel>
+                </Grid>
             </Border>
-
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <Button Content="Validar" Grid.Column="1" Margin="10"/>
-            </Grid>
         </Grid>
     </Grid>
 </Window>

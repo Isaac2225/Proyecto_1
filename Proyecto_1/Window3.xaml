@@ -7,13 +7,15 @@
         mc:Ignorable="d"
         Title="Window3" Height="450" Width="500"
         ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
-        Background="#F3F5F9" FontFamily="Segoe UI" FontSize="13">
+        Background="#121417" FontFamily="Segoe UI" FontSize="13">
 
     <Window.Resources>
-        <SolidColorBrush x:Key="Primary" Color="#2563EB"/>
-        <SolidColorBrush x:Key="Neutral" Color="#475569"/>
-        <SolidColorBrush x:Key="BorderColor" Color="#D1D5DB"/>
-        <SolidColorBrush x:Key="TextColor" Color="#1F2937"/>
+        <SolidColorBrush x:Key="Primary" Color="#3B82F6"/>
+        <SolidColorBrush x:Key="Neutral" Color="#374151"/>
+        <SolidColorBrush x:Key="PanelBackground" Color="#1E2126"/>
+        <SolidColorBrush x:Key="InputBackground" Color="#262A30"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#323741"/>
+        <SolidColorBrush x:Key="TextColor" Color="#E5E7EB"/>
 
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
@@ -23,12 +25,49 @@
             <Setter Property="Padding" Value="8,4"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Background" Value="White"/>
+            <Setter Property="Background" Value="{StaticResource InputBackground}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="CaretBrush" Value="{StaticResource TextColor}"/>
             <Style.Triggers>
                 <Trigger Property="IsKeyboardFocused" Value="True">
                     <Setter Property="BorderBrush" Value="{StaticResource Primary}"/>
                 </Trigger>
             </Style.Triggers>
+        </Style>
+
+        <Style TargetType="PasswordBox">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="{StaticResource InputBackground}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="CaretBrush" Value="{StaticResource TextColor}"/>
+            <Style.Triggers>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource Primary}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="ToggleButton">
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#374151"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <Style TargetType="Button">
@@ -73,7 +112,7 @@
             <TextBlock Text="Iniciar sesión" FontSize="38" FontWeight="SemiBold" VerticalAlignment="Center"/>
         </StackPanel>
 
-        <Border Grid.Row="1" Margin="30,10" Background="White" CornerRadius="12"
+        <Border Grid.Row="1" Margin="30,10" Background="{StaticResource PanelBackground}" CornerRadius="12"
                 BorderBrush="{StaticResource BorderColor}" BorderThickness="1">
             <Grid>
                 <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -92,13 +131,26 @@
                     <TextBox x:Name="txtMail" Grid.Row="0" Grid.Column="1" Height="32" Width="200" VerticalContentAlignment="Center" Margin="0,0,0,10"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Contraseña:" FontWeight="SemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,10,10" FontSize="16"/>
-                    <TextBox x:Name="txtPwd" Grid.Row="1" Grid.Column="1" Height="32" Width="200" VerticalContentAlignment="Center" Margin="0,0,0,10"/>
+                    <Grid Grid.Row="1" Grid.Column="1" Margin="0,0,0,10">
+                        <PasswordBox x:Name="txtPwd" Height="32" Width="200"
+                                     VerticalContentAlignment="Center" Padding="8,0,30,0"
+                                     PasswordChanged="TxtPwd_PasswordChanged"/>
+
+                        <TextBox x:Name="txtPwdVisible" Height="32" Width="200"
+                                 VerticalContentAlignment="Center" Padding="8,0,30,0"
+                                 Visibility="Collapsed"
+                                 TextChanged="TxtPwdVisible_TextChanged"/>
+
+                        <ToggleButton x:Name="btnVerPwd" Content="👁" Width="26" Height="26"
+                                      HorizontalAlignment="Right" Margin="0,0,3,0"
+                                      Checked="BtnVerPwd_Changed" Unchecked="BtnVerPwd_Changed"/>
+                    </Grid>
 
                     <Grid Grid.Row="2" Grid.ColumnSpan="2" Height="55">
                         <StackPanel VerticalAlignment="Top">
-                            <TextBlock x:Name="txtErrorUsr" Text="El usuario no existe." Foreground="#DC2626" HorizontalAlignment="Center" Visibility="Collapsed"/>
-                            <TextBlock x:Name="txtErrorPwd" Text="Contraseña incorrecta." Foreground="#DC2626" HorizontalAlignment="Center" Visibility="Collapsed"/>
-                            <TextBlock x:Name="txtErrorDB" Text="El correo y la contraseña no coinciden." Foreground="#DC2626" HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="280" Visibility="Collapsed"/>
+                            <TextBlock x:Name="txtErrorUsr" Text="El usuario no existe." Foreground="#EF4444" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                            <TextBlock x:Name="txtErrorPwd" Text="Contraseña incorrecta." Foreground="#EF4444" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                            <TextBlock x:Name="txtErrorDB" Text="El correo y la contraseña no coinciden." Foreground="#EF4444" HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="280" Visibility="Collapsed"/>
                         </StackPanel>
                     </Grid>
                 </Grid>

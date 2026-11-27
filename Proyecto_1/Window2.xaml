@@ -6,7 +6,95 @@
         xmlns:local="clr-namespace:Proyecto_1"
         mc:Ignorable="d"
         Title="Window2" Height="450" Width="500"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        Background="#121417" FontFamily="Segoe UI" FontSize="13">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="Primary" Color="#3B82F6"/>
+        <SolidColorBrush x:Key="PanelBackground" Color="#1E2126"/>
+        <SolidColorBrush x:Key="InputBackground" Color="#262A30"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#323741"/>
+        <SolidColorBrush x:Key="TextColor" Color="#E5E7EB"/>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="{StaticResource InputBackground}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="CaretBrush" Value="{StaticResource TextColor}"/>
+            <Style.Triggers>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource Primary}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="PasswordBox">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="{StaticResource InputBackground}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="CaretBrush" Value="{StaticResource TextColor}"/>
+            <Style.Triggers>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource Primary}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="ToggleButton">
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#374151"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource Primary}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -14,9 +102,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Registrarse" FontSize="50" HorizontalAlignment="Center"/>
+        <TextBlock Grid.Row="0" Text="Registrarse" FontSize="40" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-        <Border BorderBrush="Black" BorderThickness="2" Margin="10" Grid.Row="1">
+        <Border Grid.Row="1" Margin="20,5" Background="{StaticResource PanelBackground}" CornerRadius="12"
+                BorderBrush="{StaticResource BorderColor}" BorderThickness="1">
             <Grid>
                 <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
@@ -32,56 +121,54 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Nombre:" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,10,10" FontSize="16"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Nombre:" FontWeight="SemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,10,10" FontSize="15"/>
                     <TextBox x:Name="txtNombre" Grid.Row="0" Grid.Column="1" Height="30" Width="200" VerticalContentAlignment="Center" Margin="0,0,0,10"/>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Email:" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,10,10" FontSize="16"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Email:" FontWeight="SemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,10,10" FontSize="15"/>
                     <TextBox x:Name="txtMail" Grid.Row="1" Grid.Column="1" Height="30" Width="200" VerticalContentAlignment="Center" Margin="0,0,0,10"/>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Contraseña:" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,10,10" FontSize="16"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Contraseña:" FontWeight="SemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,10,10" FontSize="15"/>
                     <Grid Grid.Row="2" Grid.Column="1" Margin="0,0,0,10">
                         <PasswordBox x:Name="txtPwd" Height="30" Width="200"
-                            VerticalContentAlignment="Center" Padding="0,0,30,0"
-                            PasswordChanged="TxtPwd_PasswordChanged"/> 
+                            VerticalContentAlignment="Center" Padding="8,0,30,0"
+                            PasswordChanged="TxtPwd_PasswordChanged"/>
 
                         <TextBox x:Name="txtPwdVisible" Height="30" Width="200"
-                            VerticalContentAlignment="Center" Padding="0,0,30,0"
+                            VerticalContentAlignment="Center" Padding="8,0,30,0"
                             Visibility="Collapsed"
                             TextChanged="TxtPwdVisible_TextChanged"/>
 
                         <ToggleButton x:Name="btnVerPwd" Content="👁" Width="26" Height="26"
                             HorizontalAlignment="Right" Margin="0,0,2,0"
-                            Background="Transparent" BorderThickness="0" Cursor="Hand"
                             Checked="BtnVerPwd_Changed" Unchecked="BtnVerPwd_Changed"/>
                     </Grid>
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Confirmar contraseña:" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,10,0" FontSize="16"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Confirmar contraseña:" FontWeight="SemiBold" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,10,10" FontSize="15"/>
                     <Grid Grid.Row="3" Grid.Column="1" Margin="0,0,0,10">
                         <PasswordBox x:Name="txtConfirmPwd" Height="30" Width="200"
-                            VerticalContentAlignment="Center" Padding="0,0,30,0"
+                            VerticalContentAlignment="Center" Padding="8,0,30,0"
                             PasswordChanged="TxtConfirmPwd_PasswordChanged"/>
 
                         <TextBox x:Name="txtConfirmPwdVisible" Height="30" Width="200"
-                            VerticalContentAlignment="Center" Padding="0,0,30,0"
+                            VerticalContentAlignment="Center" Padding="8,0,30,0"
                             Visibility="Collapsed"
                             TextChanged="TxtConfirmPwdVisible_TextChanged"/>
 
                         <ToggleButton x:Name="btnVerConfirmPwd" Content="👁" Width="26" Height="26"
                             HorizontalAlignment="Right" Margin="0,0,2,0"
-                            Background="Transparent" BorderThickness="0" Cursor="Hand"
                             Checked="BtnVerConfirmPwd_Changed" Unchecked="BtnVerConfirmPwd_Changed"/>
                     </Grid>
 
-                    <Grid Grid.Row="4" Grid.ColumnSpan="2" Height="45">
+                    <Grid Grid.Row="4" Grid.ColumnSpan="2" Height="35">
                         <StackPanel VerticalAlignment="Top">
-                            <TextBlock x:Name="txtErrorMail" Text="El mail no sigue el formato correcto." Foreground="Red" HorizontalAlignment="Center" Visibility="Collapsed"/>
-                            <TextBlock x:Name="txtError2Pwd" Text="Las contraseñas no coinciden." Foreground="Red" HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="280" Visibility="Collapsed"/>
+                            <TextBlock x:Name="txtErrorMail" Text="El mail no sigue el formato correcto." Foreground="#EF4444" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                            <TextBlock x:Name="txtError2Pwd" Text="Las contraseñas no coinciden." Foreground="#EF4444" HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="280" Visibility="Collapsed"/>
                         </StackPanel>
                     </Grid>
                 </Grid>
             </Grid>
         </Border>
 
-        <Button Grid.Row="2" Content="Registrarse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="70" Click="Button_Click"/>
+        <Button Grid.Row="2" Content="Registrarse" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="140" Click="Button_Click"/>
     </Grid>
 </Window>

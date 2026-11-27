@@ -77,5 +77,17 @@ namespace Proyecto_1
                 MessageBox.Show("Error al bloquear: " + ex.Message);
             }
         }
+        private void Button_Click_CambiarUsuario(object sender, RoutedEventArgs e)
+        {
+            Window3 login = new Window3(this);
+            login.ShowDialog();
+        }
+
+        private void Button_Click_LogOut(object sender, RoutedEventArgs e)
+        {
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Show();
+            this.Close();
+        }
     }
 }
